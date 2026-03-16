@@ -373,7 +373,7 @@ function render(){
     for(var i=0;i<f.length;i++){
     var p=f[i];var b='';
     if(p.tags){for(var j=0;j<p.tags.length;j++){var t=p.tags[j];var cl=t==='Kosher'?'tag-kosher':t==='Sin TACC'?'tag-sintacc':t==='Vegano'?'tag-vegano':'tag-importado';b+='<span class="p-tag '+cl+'">'+t+'</span>'}}
-    h+='<div class="p-card" style="animation-delay:'+(i*0.04)+'s;cursor:pointer" onclick="openProductDetail(window._fp['+i+'])"><div class="p-card-img"><img src="'+(p.image||HERO_IMG)+'" alt="'+p.name+'" loading="lazy">'+b+'</div><div class="p-card-body"><div class="p-card-cat">'+p.category+'</div><h3 class="p-card-name">'+p.name+'</h3><p class="p-card-desc">'+(p.description||'')+'</p></div></div>';
+    h+='<div class="p-card" style="animation-delay:'+(i*0.04)+'s;cursor:pointer" onclick="openProductDetail('+i+')"><div class="p-card-img"><img src="'+(p.image||HERO_IMG)+'" alt="'+p.name+'" loading="lazy">'+b+'</div><div class="p-card-body"><div class="p-card-cat">'+p.category+'</div><h3 class="p-card-name">'+p.name+'</h3><p class="p-card-desc">'+(p.description||'')+'</p></div></div>';
   }
   g.innerHTML=h;
 }
@@ -786,8 +786,11 @@ function loadFiles(){
 }
 
 
-function openProductDetail(product){
+function openProductDetail(idx){
+  var product=window._fp[idx];
+  if(!product)return;
   var modal=document.getElementById('productDetail');
+  if(!modal)return;
   document.getElementById('pdImg').src=product.image||HERO_IMG;
   document.getElementById('pdCat').textContent=product.category||'';
   document.getElementById('pdName').textContent=product.name||'';
