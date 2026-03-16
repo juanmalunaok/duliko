@@ -214,6 +214,27 @@ html,body{overflow-x:hidden;max-width:100vw}
 .descargas{background:var(--bg)}
 .files-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;max-width:var(--mw);margin:0 auto}
 .file-card{display:flex;flex-direction:column;align-items:center;padding:28px 20px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--rs);text-decoration:none;transition:all .3s var(--ease);text-align:center}
+.product-detail{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:9998;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.product-detail.show{display:flex}
+.pd-inner{background:var(--bg-card);border-radius:var(--rp);max-width:900px;width:100%;max-height:90vh;overflow-y:auto;display:flex;position:relative}
+.pd-close{position:absolute;top:16px;right:16px;background:rgba(0,0,0,.1);color:var(--text);border:none;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.pd-close:hover{background:rgba(0,0,0,.2)}
+.pd-img-wrap{flex:0 0 45%;max-height:90vh;overflow:hidden;border-radius:var(--rp) 0 0 var(--rp)}
+.pd-img-wrap img{width:100%;height:100%;object-fit:cover}
+.pd-body{flex:1;padding:40px 32px;display:flex;flex-direction:column;justify-content:center}
+.pd-cat{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:8px}
+.pd-name{font-family:var(--f-head);font-size:1.8rem;font-weight:700;color:var(--text);margin-bottom:16px;line-height:1.2}
+.pd-desc{font-size:.95rem;color:var(--text2);line-height:1.7;margin-bottom:20px}
+.pd-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.pd-tag{padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:500;background:var(--accent-light);color:var(--accent)}
+.pd-wa-btn{display:inline-flex;align-items:center;gap:8px;background:#25D366;color:#fff;text-decoration:none;padding:12px 24px;border-radius:var(--rp);font-weight:600;font-size:.9rem;transition:all .2s;width:fit-content}
+.pd-wa-btn:hover{background:#1da851;transform:translateY(-2px);box-shadow:0 4px 12px rgba(37,211,102,.3)}
+@media(max-width:768px){
+.pd-inner{flex-direction:column;max-height:95vh}
+.pd-img-wrap{flex:none;height:250px;border-radius:var(--rp) var(--rp) 0 0}
+.pd-body{padding:24px 20px}
+.pd-name{font-size:1.4rem}
+}
 .file-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-xl);border-color:var(--accent)}
 .file-icon{width:56px;height:56px;border-radius:var(--rs);background:var(--accent-light);display:flex;align-items:center;justify-content:center;margin-bottom:14px;color:var(--accent)}
 .file-title{font-weight:600;color:var(--text);font-size:.95rem;margin-bottom:8px}
@@ -348,10 +369,11 @@ function render(){
   if(c){c.textContent=f.length+' producto'+(f.length!==1?'s':'')+(activeBrand!=='todas'?' en '+activeBrand:'')+(activeTag!=='todos'?' \u00b7 '+activeTag:'')}
   if(!f.length){g.innerHTML='<div class="no-results"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><h3 style="margin-bottom:6px">No encontramos productos</h3><p>Probá con otros términos</p></div>';return}
   var h='';
-  for(var i=0;i<f.length;i++){
+  window._fp=f;
+    for(var i=0;i<f.length;i++){
     var p=f[i];var b='';
     if(p.tags){for(var j=0;j<p.tags.length;j++){var t=p.tags[j];var cl=t==='Kosher'?'tag-kosher':t==='Sin TACC'?'tag-sintacc':t==='Vegano'?'tag-vegano':'tag-importado';b+='<span class="p-tag '+cl+'">'+t+'</span>'}}
-    h+='<div class="p-card" style="animation-delay:'+(i*0.04)+'s"><div class="p-card-img"><img src="'+(p.image||HERO_IMG)+'" alt="'+p.name+'" loading="lazy">'+b+'</div><div class="p-card-body"><div class="p-card-cat">'+p.category+'</div><h3 class="p-card-name">'+p.name+'</h3><p class="p-card-desc">'+(p.description||'')+'</p></div></div>';
+    h+='<div class="p-card" style="animation-delay:'+(i*0.04)+'s;cursor:pointer" onclick="openProductDetail(window._fp['+i+'])"><div class="p-card-img"><img src="'+(p.image||HERO_IMG)+'" alt="'+p.name+'" loading="lazy">'+b+'</div><div class="p-card-body"><div class="p-card-cat">'+p.category+'</div><h3 class="p-card-name">'+p.name+'</h3><p class="p-card-desc">'+(p.description||'')+'</p></div></div>';
   }
   g.innerHTML=h;
 }
@@ -763,6 +785,31 @@ function loadFiles(){
   });
 }
 
+
+function openProductDetail(product){
+  var modal=document.getElementById('productDetail');
+  document.getElementById('pdImg').src=product.image||HERO_IMG;
+  document.getElementById('pdCat').textContent=product.category||'';
+  document.getElementById('pdName').textContent=product.name||'';
+  document.getElementById('pdDesc').textContent=product.description||'';
+  var tagsHtml='';
+  if(product.tags&&product.tags.length){
+    for(var i=0;i<product.tags.length;i++){
+      tagsHtml+='<span class="pd-tag">'+product.tags[i]+'</span>';
+    }
+  }
+  document.getElementById('pdTags').innerHTML=tagsHtml;
+  var msg=encodeURIComponent('Hola! Me interesa el producto: '+product.name+' ('+product.category+')');
+  document.getElementById('pdWhatsApp').href='https://wa.me/5491157044003?text='+msg;
+  modal.classList.add('show');
+  document.body.style.overflow='hidden';
+}
+
+function closeProductDetail(){
+  document.getElementById('productDetail').classList.remove('show');
+  document.body.style.overflow='';
+}
+
 document.addEventListener('DOMContentLoaded',function(){
   var nav=document.getElementById('nav');
   window.addEventListener('scroll',function(){nav.classList.toggle('compact',window.scrollY>60)});
@@ -843,6 +890,20 @@ document.addEventListener('DOMContentLoaded',function(){
   renderBrandSelect();
 });
 </script>
+
+<div id="productDetail" class="product-detail" onclick="if(event.target===this)closeProductDetail()">
+<div class="pd-inner">
+<button class="pd-close" onclick="closeProductDetail()">✕</button>
+<div class="pd-img-wrap"><img id="pdImg" src="" alt=""></div>
+<div class="pd-body">
+<span class="pd-cat" id="pdCat"></span>
+<h2 class="pd-name" id="pdName"></h2>
+<p class="pd-desc" id="pdDesc"></p>
+<div class="pd-tags" id="pdTags"></div>
+<a id="pdWhatsApp" href="#" target="_blank" class="pd-wa-btn"><svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.611.611l4.458-1.495A11.96 11.96 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.387 0-4.592-.838-6.313-2.233l-.44-.362-2.886.968.968-2.886-.362-.44A9.96 9.96 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></svg> Consultar por WhatsApp</a>
+</div>
+</div>
+</div>
 
 <div id="lightbox" class="lightbox" onclick="closeLightbox()"><img id="lightboxImg" src="" alt=""><button class="lb-close" onclick="closeLightbox()">✕</button></div>
 <div id="confirmModal" class="confirm-modal"><div class="confirm-box"><p id="confirmMsg"></p><div class="confirm-btns"><button class="confirm-yes" id="confirmYes">Sí, eliminar</button><button class="confirm-no" id="confirmNo">Cancelar</button></div></div></div>
