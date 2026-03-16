@@ -376,6 +376,15 @@ function render(){
     h+='<div class="p-card" style="animation-delay:'+(i*0.04)+'s;cursor:pointer" data-pidx="'+i+'"><div class="p-card-img"><img src="'+(p.image||HERO_IMG)+'" alt="'+p.name+'" loading="lazy">'+b+'</div><div class="p-card-body"><div class="p-card-cat">'+p.category+'</div><h3 class="p-card-name">'+p.name+'</h3><p class="p-card-desc">'+(p.description||'')+'</p></div></div>';
   }
   g.innerHTML=h;
+  // Attach click handlers to product cards
+  var cards=g.querySelectorAll('.p-card');
+  for(var ci=0;ci<cards.length;ci++){
+    (function(idx){
+      cards[idx].addEventListener('click',function(){
+        openProductDetail(idx);
+      });
+    })(ci);
+  }
 }
 
 function setBrand(b){
@@ -787,6 +796,7 @@ function loadFiles(){
 
 
 function openProductDetail(idx){
+  console.log('Opening product',idx,window._fp?window._fp[idx]:null);
   var product=window._fp[idx];
   if(!product)return;
   var modal=document.getElementById('productDetail');
@@ -884,13 +894,6 @@ document.addEventListener('DOMContentLoaded',function(){
   for(var i=0;i<aTabs.length;i++){(function(t){t.addEventListener('click',function(){switchTab(t.getAttribute('data-tab'))})})(aTabs[i])}
   document.getElementById('pImage').addEventListener('change',handlePreview);
   document.getElementById('saveProductBtn').addEventListener('click',saveProduct);
-  // Product detail - event delegation
-  document.getElementById('productsGrid').addEventListener('click',function(e){
-    var card=e.target.closest('.p-card');
-    if(!card)return;
-    var idx=parseInt(card.getAttribute('data-pidx'));
-    if(!isNaN(idx)&&window._fp&&window._fp[idx])openProductDetail(idx);
-  });
 
   if(auth&&typeof auth.onAuthStateChanged==='function'){auth.onAuthStateChanged(function(u){if(u&&AUTHORIZED_EMAILS.indexOf(u.email)!==-1)onAuth(u)})}
   loadProducts();
