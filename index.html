@@ -787,7 +787,6 @@ function loadFiles(){
 
 
 function openProductDetail(idx){
-  if(document.getElementById('modalBg').classList.contains('show'))return;
   var product=window._fp[idx];
   if(!product)return;
   var modal=document.getElementById('productDetail');
