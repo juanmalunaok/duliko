@@ -95,7 +95,7 @@ function openProductDetail(idx){
     }
   }
   document.getElementById('pdTags').innerHTML=tagsHtml;
-  var msg=encodeURIComponent('Hola! Me interesa el producto: '+product.name+' ('+product.category+')');
+  var msg=encodeURIComponent('Hola, ¿cómo estás? Vi este producto en la Web y me interesaría tener más información. ¿Me podrías contar un poco más? Gracias.');
   document.getElementById('pdWhatsApp').href='https://wa.me/5491157044003?text='+msg;
   modal.classList.add('show');
   document.body.style.overflow='hidden';
@@ -169,28 +169,28 @@ document.addEventListener('DOMContentLoaded',function(){
     var heroH=heroSection.offsetHeight;
     var p=Math.min(Math.max(sy/heroH,0),1);
 
-    // Scale: bloom to 1.10 at p≈0.16, then shrink to 0.65 at p=1
-    var scale=p<=0.16
-      ?1+(p/0.16)*0.10
-      :1.10-((p-0.16)/0.84)*0.45;
-    scale=Math.max(0.65,scale);
+    // Scale: bloom to 1.28 at p≈0.18, then shrink to 0.58 at p=1
+    var scale=p<=0.18
+      ?1+(p/0.18)*0.28
+      :1.28-((p-0.18)/0.82)*0.70;
+    scale=Math.max(0.58,scale);
 
-    // Parallax: logo floats up at 28% of scroll speed
-    var ty=-(sy*0.28);
+    // Parallax: logo floats up at 48% of scroll speed
+    var ty=-(sy*0.48);
 
-    // Subtle direction tilt (±1.8°) — eases in/out with scroll momentum
+    // Direction tilt (±5°) — eases in/out with scroll momentum
     var delta=sy-logoPrevY;
-    logoTilt+=(delta*0.05-logoTilt)*0.10;
-    logoTilt=Math.max(-1.8,Math.min(1.8,logoTilt));
+    logoTilt+=(delta*0.12-logoTilt)*0.14;
+    logoTilt=Math.max(-5,Math.min(5,logoTilt));
     logoPrevY=sy;
 
-    // Opacity: full until p=0.55, then fades to 0 at p=0.95
-    var opacity=p<0.55?1:Math.max(0,1-(p-0.55)/0.40);
+    // Opacity: full until p=0.50, then fades to 0 at p=0.90
+    var opacity=p<0.50?1:Math.max(0,1-(p-0.50)/0.40);
 
-    // Glow: intensifies at peak scale, then dimms
-    var gi=p<=0.16?p/0.16:Math.max(0,1-(p-0.16)/0.38);
-    var gpx=(40+gi*60).toFixed(0);
-    var ga=(0.15+gi*0.28).toFixed(2);
+    // Glow: intensifies at peak scale, then dims
+    var gi=p<=0.18?p/0.18:Math.max(0,1-(p-0.18)/0.35);
+    var gpx=(30+gi*90).toFixed(0);
+    var ga=(0.12+gi*0.45).toFixed(2);
 
     heroLogo.style.transform=
       'translateY('+ty.toFixed(1)+'px) '+
