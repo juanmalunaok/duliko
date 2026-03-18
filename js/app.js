@@ -28,7 +28,7 @@ function render(){
     for(var i=0;i<f.length;i++){
     var p=f[i];var b='';
     if(p.tags){for(var j=0;j<p.tags.length;j++){var t=p.tags[j];var cl=t==='Kosher'?'tag-kosher':t==='Sin TACC'?'tag-sintacc':t==='Vegano'?'tag-vegano':'tag-importado';b+='<span class="p-tag '+cl+'">'+t+'</span>'}}
-    h+='<div class="p-card" style="animation-delay:'+(i*0.04)+'s;cursor:pointer" data-pidx="'+i+'"><div class="p-card-img"><img src="'+(p.image||HERO_IMG)+'" alt="'+p.name+'" loading="lazy">'+b+'</div><div class="p-card-body"><div class="p-card-cat">'+p.category+'</div><h3 class="p-card-name">'+p.name+'</h3><p class="p-card-desc">'+(p.description||'')+'</p></div></div>';
+    h+='<div class="p-card" style="cursor:pointer" data-pidx="'+i+'"><div class="p-card-img"><img src="'+(p.image||HERO_IMG)+'" alt="'+p.name+'" loading="lazy">'+b+'</div><div class="p-card-body"><div class="p-card-cat">'+p.category+'</div><h3 class="p-card-name">'+p.name+'</h3><p class="p-card-desc">'+(p.description||'')+'</p></div></div>';
   }
   g.innerHTML=h;
   // Attach click handlers to product cards
@@ -39,6 +39,22 @@ function render(){
         openProductDetail(idx);
       });
     })(ci);
+  }
+
+  // Scroll-triggered entrance animation (NK-style)
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        var el=e.target;
+        el.classList.add('in-view');
+        setTimeout(function(){el.style.transitionDelay='';},900);
+        io.unobserve(el);
+      }
+    });
+  },{threshold:0.08,rootMargin:'0px 0px -24px 0px'});
+  for(var ri=0;ri<cards.length;ri++){
+    cards[ri].style.transitionDelay=(ri*0.07)+'s';
+    io.observe(cards[ri]);
   }
 }
 
