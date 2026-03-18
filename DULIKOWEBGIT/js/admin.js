@@ -1,0 +1,293 @@
+var HERO_IMG='assets/hero.jpg';
+var currentUser=null;
+var customTags=["Sin TACC","Kosher","Importados","Orgánicos","Sin Lactosa","Vegano"];
+var customBrands=["ALL RICE","Autenta Foods","Clic-Clac","Dame maní","Edemy","El Celta","Farfalej","Frisbix","Green Crops","Lulemúu","Magla","Mixme","Natural Pop","Osem - Nestle","Rodez","Yin Yang"];
+var selectedTags=[];
+
+function signInWithGoogle(){
+  if(!auth){showErr('Firebase no configurado.');return}
+  auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(function(r){
+    if(AUTHORIZED_EMAILS.indexOf(r.user.email)===-1){showErr('Email no autorizado.');auth.signOut();return}
+    onAuth(r.user)}).catch(function(e){showErr(e.message)});
+}
+
+function onAuth(u){
+  currentUser=u;
+  document.getElementById('adminLogin').style.display='none';
+  document.getElementById('adminDashboard').classList.add('show');
+  document.getElementById('adminUser').textContent='Logueado: '+u.email;
+  var lbl=document.getElementById('loginBtn');
+  if(lbl){lbl.textContent=u.displayName||'Admin';lbl.classList.add('logged-in')}
+  loadAdminList();
+}
+
+function signOutAdmin(){
+  if(auth)auth.signOut();currentUser=null;
+  document.getElementById('adminLogin').style.display='block';
+  document.getElementById('adminDashboard').classList.remove('show');
+  var _lb=document.getElementById('loginBtn');if(_lb)_lb.classList.remove('logged-in');
+  var ll=document.getElementById('loginBtn');if(ll)ll.textContent='Ingresar';
+}
+
+function showErr(m){var e=document.getElementById('adminError');e.textContent=m;e.style.display='block';setTimeout(function(){e.style.display='none'},5000)}
+
+function switchTab(t){
+  var tabs=document.querySelectorAll('.a-tab');for(var i=0;i<tabs.length;i++)tabs[i].classList.remove('active');
+  var cs=document.querySelectorAll('.tab-c');for(var i=0;i<cs.length;i++)cs[i].classList.remove('active');
+  document.querySelector('.a-tab[data-tab="'+t+'"]').classList.add('active');
+  var tabId=t==='add'?'tabAdd':t==='novedades'?'tabNovedades':t==='archivos'?'tabArchivos':'tabList';
+  document.getElementById(tabId).classList.add('active');
+  if(t==='list'||t==='novedades')loadAdminList();
+}
+
+function handlePreview(e){
+  var file=e.target.files[0];if(!file)return;
+  var r=new FileReader();
+  r.onload=function(ev){var old=document.querySelector('.file-up .preview');if(old)old.remove();var img=document.createElement('img');img.src=ev.target.result;img.className='preview';document.getElementById('fileUpload').appendChild(img)};
+  r.readAsDataURL(file);
+}
+
+function saveProduct(){
+  var n=document.getElementById('pName').value.trim();
+  var cat=document.getElementById('pCat').value;
+  var d=document.getElementById('pDesc').value.trim();
+  var tags=selectedTags.slice();
+  var imgFile=document.getElementById('pImage').files[0];
+  if(!n||!cat){showToast('Completá nombre y categoría.','error');return}
+  if(!db){showToast('Firebase no configurado.','error');return}
+  var btn=document.getElementById('saveProductBtn');btn.disabled=true;btn.textContent='Guardando...';
+  var p=Promise.resolve('');
+  if(imgFile&&storage){var ref=storage.ref('products/'+Date.now()+'_'+imgFile.name);p=ref.put(imgFile).then(function(){return ref.getDownloadURL()})}
+  p.then(function(url){return db.collection('products').add({name:n,category:cat,description:d,tags:tags,image:url||'',createdAt:firebase.firestore.FieldValue.serverTimestamp(),createdBy:currentUser.email})})
+  .then(function(){document.getElementById('pName').value='';document.getElementById('pCat').value='';document.getElementById('pDesc').value='';document.getElementById('pImage').value='';var pv=document.querySelector('.file-up .preview');if(pv)pv.remove();showToast('Producto guardado!','success')})
+  .catch(function(e){showToast('Error: '+e.message,'error')})
+  .finally(function(){btn.disabled=false;btn.textContent='Guardar Producto'});
+}
+
+function loadAdminList(){
+  var l=document.getElementById('adminProductsList');
+  if(!db){l.innerHTML='<p style="text-align:center;padding:32px;color:var(--text2)">Conectá Firebase para gestionar productos.</p>';return}
+  l.innerHTML='<p style="text-align:center;padding:32px;color:var(--text2)">Cargando...</p>';
+  db.collection('products').orderBy('createdAt','desc').get().then(function(s){
+    if(s.empty){l.innerHTML='<p style="text-align:center;padding:32px;color:var(--text2)">Sin productos. Agregá uno nuevo.</p>';return}
+    var h='';s.forEach(function(doc){var p=doc.data();h+='<div class="a-item"><img class="a-thumb" src="'+(p.image||HERO_IMG)+'"><div class="a-info"><h4>'+p.name+'</h4><span>'+p.category+'</span></div><button class="a-del" onclick="deleteProduct(\''+doc.id+'\')">✕</button></div>'});
+    l.innerHTML=h;
+  });
+  // Load novedades list too
+  var nl=document.getElementById('adminNovedadesList');
+  if(nl){
+    db.collection('novedades').orderBy('date','desc').get().then(function(s){
+      if(s.empty){nl.innerHTML='<p style="text-align:center;padding:16px;color:var(--text2)">Sin novedades.</p>';return}
+      var h='';s.forEach(function(doc){var n=doc.data();h+='<div class="a-item"><div class="a-info"><h4>'+n.title+'</h4><span>'+(n.description||'').substring(0,60)+'</span></div><button class="a-del" onclick="deleteNovedad(\''+doc.id+'\')">✕</button></div>'});
+      nl.innerHTML=h;
+    });
+  }
+  // Load files in admin
+  var fl=document.getElementById('adminFilesList');
+  if(fl){
+    db.collection('archivos').orderBy('date','desc').get().then(function(s){
+      if(s.empty){fl.innerHTML='<p style="text-align:center;padding:16px;color:var(--text2)">Sin archivos.</p>';return}
+      var h='';s.forEach(function(doc){var f=doc.data();h+='<div class="a-item"><div class="a-info"><h4>'+f.title+'</h4><span>'+f.filename+'</span></div><button class="a-del" onclick="deleteFile(\''+doc.id+'\')">&times;</button></div>'});
+      fl.innerHTML=h;
+    });
+  }
+}
+
+function deleteProduct(id){
+  customConfirm('¿Eliminar este producto?',function(){
+    if(!db)return;
+    db.collection('products').doc(id).delete().then(function(){loadAdminList()}).catch(function(e){showToast('Error: '+e.message,'error')});
+  });
+}
+
+function saveNovedad(){
+  if(!db)return;
+  var title=document.getElementById('novTitle').value;
+  var desc=document.getElementById('novDesc').value;
+  var file=document.getElementById('novImage').files[0];
+  if(!title){showToast('Completá el título.','error');return}
+  var btn=document.querySelector('#tabNovedades button[onclick]');
+  if(btn)btn.disabled=true;
+  var p=file&&storage?storage.ref('novedades/'+Date.now()+'_'+file.name).put(file).then(function(s){return s.ref.getDownloadURL()}):Promise.resolve('');
+  p.then(function(url){
+    return db.collection('novedades').add({title:title,description:desc,image:url||'',date:firebase.firestore.FieldValue.serverTimestamp(),createdBy:currentUser.email});
+  }).then(function(){
+    document.getElementById('novTitle').value='';
+    document.getElementById('novDesc').value='';
+    document.getElementById('novImage').value='';
+    if(btn)btn.disabled=false;
+    showToast('Novedad publicada','success');
+    loadAdminList();
+  }).catch(function(e){showToast('Error: '+e.message,'error');if(btn)btn.disabled=false});
+}
+
+function deleteNovedad(id){
+  customConfirm('¿Eliminar esta novedad?',function(){
+    if(!db)return;
+    db.collection('novedades').doc(id).delete().then(function(){loadAdminList()});
+  });
+}
+
+function renderTagChips(){
+  var w=document.getElementById('pTagsWrap');
+  if(!w)return;
+  var h='';
+  for(var i=0;i<customTags.length;i++){
+    var t=customTags[i];
+    var active=selectedTags.indexOf(t)>=0;
+    h+='<span class="tag-chip'+(active?' active':'')+'" onclick="toggleTag(\''+t.replace(/'/g,"\\'")+'\')">'+ t+'<span class="tag-x" onclick="event.stopPropagation();removeTag('+i+')" title="Eliminar">✕</span></span>';
+  }
+  w.innerHTML=h;
+  document.getElementById('pTags').value=selectedTags.join(',');
+}
+
+function removeTag(idx){
+  var t=customTags[idx];
+  customTags.splice(idx,1);
+  var si=selectedTags.indexOf(t);
+  if(si>=0)selectedTags.splice(si,1);
+  saveMeta();
+  renderTagChips();
+  updateFilterPills();
+}
+
+function toggleTag(t){
+  var idx=selectedTags.indexOf(t);
+  if(idx>=0)selectedTags.splice(idx,1);else selectedTags.push(t);
+  renderTagChips();
+}
+
+function addTag(){
+  var input=document.getElementById('newTagInput');
+  var t=input.value.trim();
+  if(!t)return;
+  if(customTags.indexOf(t)<0){customTags.push(t);saveMeta()}
+  if(selectedTags.indexOf(t)<0)selectedTags.push(t);
+  input.value='';
+  renderTagChips();
+  updateFilterPills();
+}
+
+function renderBrandSelect(){
+  var sel=document.getElementById('pCat');
+  if(!sel)return;
+  var h='<option value="">Seleccionar línea...</option>';
+  for(var i=0;i<customBrands.length;i++){
+    h+='<option value="'+customBrands[i]+'">'+customBrands[i]+'</option>';
+  }
+  sel.innerHTML=h;
+  // Render brand list with delete
+  var list=document.getElementById('brandsList');
+  if(list){
+    var bl='';
+    for(var i=0;i<customBrands.length;i++){
+      bl+='<span class="tag-chip"><span>'+customBrands[i]+'</span><span class="tag-x" onclick="removeBrand('+i+')" title="Eliminar">✕</span></span>';
+    }
+    list.innerHTML=bl;
+  }
+}
+
+function removeBrand(idx){
+  customConfirm('¿Eliminar la marca '+customBrands[idx]+'?',function(){
+    customBrands.splice(idx,1);
+    saveMeta();
+    renderBrandSelect();
+    updateCatalogMenu();
+  });
+}
+
+function addBrand(){
+  var input=document.getElementById('newBrandInput');
+  var b=input.value.trim();
+  if(!b)return;
+  if(customBrands.indexOf(b)<0){customBrands.push(b);saveMeta()}
+  input.value='';
+  renderBrandSelect();
+  updateCatalogMenu();
+  document.getElementById('pCat').value=b;
+}
+
+// Stubs — these elements exist only on the public page
+function updateCatalogMenu(){}
+function updateFilterPills(){}
+function loadFiles(){} // public Downloads section — no-op on admin.html
+
+function saveMeta(){
+  if(!db)return;
+  db.collection('meta').doc('config').set({tags:customTags,brands:customBrands},{merge:true});
+}
+
+function loadMeta(){
+  if(!db)return;
+  db.collection('meta').doc('config').get().then(function(doc){
+    if(doc.exists){var d=doc.data();if(d.tags&&d.tags.length)customTags=d.tags;if(d.brands&&d.brands.length)customBrands=d.brands;}
+    renderTagChips();
+    renderBrandSelect();
+  }).catch(function(){renderTagChips();renderBrandSelect()});
+}
+
+function uploadFile(){
+  if(!db||!storage)return;
+  var title=document.getElementById('fileTitle').value.trim();
+  var file=document.getElementById('fileUploadPDF').files[0];
+  if(!title||!file){showToast('Completá nombre y seleccioná un PDF.','error');return}
+  var btn=document.querySelector('#tabArchivos button[onclick]');
+  if(btn){btn.disabled=true;btn.textContent='Subiendo...';}
+  storage.ref('archivos/'+Date.now()+'_'+file.name).put(file).then(function(s){
+    return s.ref.getDownloadURL();
+  }).then(function(url){
+    return db.collection('archivos').add({title:title,url:url,filename:file.name,date:firebase.firestore.FieldValue.serverTimestamp(),createdBy:currentUser.email});
+  }).then(function(){
+    document.getElementById('fileTitle').value='';
+    document.getElementById('fileUploadPDF').value='';
+    if(btn){btn.disabled=false;btn.textContent='Subir archivo';}
+    showToast('Archivo subido','success');
+    loadAdminList();
+    loadFiles();
+  }).catch(function(e){
+    showToast('Error: '+e.message,'error');
+    if(btn){btn.disabled=false;btn.textContent='Subir archivo';}
+  });
+}
+
+function deleteFile(id){
+  customConfirm('¿Eliminar este archivo?',function(){
+    if(!db)return;
+    db.collection('archivos').doc(id).delete().then(function(){loadAdminList();loadFiles()});
+  });
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  // Custom confirm handlers
+  var cy=document.getElementById('confirmYes');if(cy)cy.addEventListener('click',function(){
+    var cm=document.getElementById('confirmModal');if(cm)cm.classList.remove('show');
+    if(confirmCallback)confirmCallback();confirmCallback=null;
+  });
+  var cn=document.getElementById('confirmNo');if(cn)cn.addEventListener('click',function(){
+    var cm=document.getElementById('confirmModal');if(cm)cm.classList.remove('show');
+    confirmCallback=null;
+  });
+
+  // Google sign-in
+  var gs=document.getElementById('googleSignIn');if(gs)gs.addEventListener('click',signInWithGoogle);
+
+  // Sign out
+  var so=document.getElementById('signOutBtn');if(so)so.addEventListener('click',signOutAdmin);
+
+  // Admin tabs
+  var aTabs=document.querySelectorAll('.a-tab');
+  for(var i=0;i<aTabs.length;i++){(function(t){t.addEventListener('click',function(){switchTab(t.getAttribute('data-tab'))})})(aTabs[i])}
+
+  // Product image preview
+  var pi=document.getElementById('pImage');if(pi)pi.addEventListener('change',handlePreview);
+
+  // Save product
+  var spb=document.getElementById('saveProductBtn');if(spb)spb.addEventListener('click',saveProduct);
+
+  // Auth state
+  if(auth&&typeof auth.onAuthStateChanged==='function'){
+    auth.onAuthStateChanged(function(u){if(u&&AUTHORIZED_EMAILS.indexOf(u.email)!==-1)onAuth(u)});
+  }
+
+  loadMeta();
+});
