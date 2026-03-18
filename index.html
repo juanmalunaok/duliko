@@ -110,8 +110,8 @@ html,body{overflow-x:hidden;max-width:100vw}
 .p-card{background:var(--bg-card);border-radius:var(--r);overflow:hidden;border:1px solid var(--border);transition:all .35s var(--ease);opacity:0;animation:cardIn .4s var(--ease) forwards}
 .p-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-h);border-color:transparent}
 @keyframes cardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-.p-card-img{overflow:hidden;position:relative}
-.p-card-img img{width:100%;height:210px;object-fit:cover;transition:transform .5s var(--ease)}
+.p-card-img{overflow:hidden;position:relative;background:var(--bg)}
+.p-card-img img{width:100%;height:280px;object-fit:contain;background:var(--bg);padding:8px;transition:transform .5s var(--ease)}
 .p-card:hover .p-card-img img{transform:scale(1.06)}
 .p-tag{position:absolute;top:10px;left:10px;padding:5px 12px;border-radius:var(--rp);font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px;backdrop-filter:blur(8px)}
 .tag-kosher{background:var(--green-light);color:var(--green)}
