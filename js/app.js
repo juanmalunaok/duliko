@@ -157,7 +157,56 @@ function loadMeta(){
 
 document.addEventListener('DOMContentLoaded',function(){
   var nav=document.getElementById('nav');
-  window.addEventListener('scroll',function(){nav.classList.toggle('compact',window.scrollY>60)});
+
+  // ── Hero logo: parallax + bloom + tilt on scroll ────────────────────────
+  var heroLogo=document.querySelector('.hero-logo');
+  var heroSection=document.querySelector('.hero');
+  var logoTilt=0, logoPrevY=0, logoRaf=false;
+
+  function applyLogoScroll(){
+    if(!heroLogo||!heroSection){logoRaf=false;return;}
+    var sy=window.scrollY;
+    var heroH=heroSection.offsetHeight;
+    var p=Math.min(Math.max(sy/heroH,0),1);
+
+    // Scale: bloom to 1.10 at p≈0.16, then shrink to 0.65 at p=1
+    var scale=p<=0.16
+      ?1+(p/0.16)*0.10
+      :1.10-((p-0.16)/0.84)*0.45;
+    scale=Math.max(0.65,scale);
+
+    // Parallax: logo floats up at 28% of scroll speed
+    var ty=-(sy*0.28);
+
+    // Subtle direction tilt (±1.8°) — eases in/out with scroll momentum
+    var delta=sy-logoPrevY;
+    logoTilt+=(delta*0.05-logoTilt)*0.10;
+    logoTilt=Math.max(-1.8,Math.min(1.8,logoTilt));
+    logoPrevY=sy;
+
+    // Opacity: full until p=0.55, then fades to 0 at p=0.95
+    var opacity=p<0.55?1:Math.max(0,1-(p-0.55)/0.40);
+
+    // Glow: intensifies at peak scale, then dimms
+    var gi=p<=0.16?p/0.16:Math.max(0,1-(p-0.16)/0.38);
+    var gpx=(40+gi*60).toFixed(0);
+    var ga=(0.15+gi*0.28).toFixed(2);
+
+    heroLogo.style.transform=
+      'translateY('+ty.toFixed(1)+'px) '+
+      'scale('+scale.toFixed(4)+') '+
+      'rotate('+logoTilt.toFixed(2)+'deg)';
+    heroLogo.style.opacity=opacity.toFixed(3);
+    heroLogo.style.filter='drop-shadow(0 0 '+gpx+'px rgba(200,149,108,'+ga+'))';
+    logoRaf=false;
+  }
+
+  window.addEventListener('scroll',function(){
+    nav.classList.toggle('compact',window.scrollY>60);
+    if(!logoRaf){logoRaf=true;requestAnimationFrame(applyLogoScroll);}
+  },{passive:true});
+
+  applyLogoScroll(); // set initial state on page load
 
   // Hamburger
   document.getElementById('hamburger').addEventListener('click',function(){var m=document.getElementById('navMenu');m.classList.toggle('open');document.body.style.overflow=m.classList.contains('open')?'hidden':''});
