@@ -21,7 +21,15 @@ function render(){
     var mb=activeBrand==='todas'||p.category.indexOf(activeBrand)>=0;
     if(ms&&mt&&mb)f.push(p);
   }
-  if(c){c.textContent=f.length+' producto'+(f.length!==1?'s':'')+(activeBrand!=='todas'?' en '+activeBrand:'')+(activeTag!=='todos'?' \u00b7 '+activeTag:'')}
+  if(c){
+    var cText=f.length+' producto'+(f.length!==1?'s':'')+(activeTag!=='todos'?' \u00b7 '+activeTag:'');
+    if(activeBrand!=='todas'){
+      c.innerHTML='<span>'+cText+' en <strong>'+activeBrand+'</strong></span>'
+        +'<a href="categoria.html?cat='+encodeURIComponent(activeBrand)+'" class="ver-cat-link">Ver catálogo completo \u2192</a>';
+    } else {
+      c.textContent=cText;
+    }
+  }
   if(!f.length){g.innerHTML='<div class="no-results"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><h3 style="margin-bottom:6px">No encontramos productos</h3><p>Probá con otros términos</p></div>';return}
   var h='';
   window._fp=f;
@@ -129,10 +137,13 @@ function updateCatalogMenu(){
   // Rebuild brand links
   var h='<h4 class="cat-col-title">Líneas</h4><a href="#productos" data-brand="todas">Ver todas</a>';
   for(var i=0;i<customBrands.length;i++){
-    h+='<a href="#productos" data-brand="'+customBrands[i]+'">'+customBrands[i]+'</a>';
+    h+='<div class="cat-brand-row">'
+      +'<a href="#productos" data-brand="'+customBrands[i]+'">'+customBrands[i]+'</a>'
+      +'<a href="categoria.html?cat='+encodeURIComponent(customBrands[i])+'" class="cat-vermas">Ver más</a>'
+      +'</div>';
   }
   col.innerHTML=h;
-  // Re-attach click handlers
+  // Re-attach filter click handlers (only on data-brand links, not on cat-vermas)
   var newLinks=col.querySelectorAll('a[data-brand]');
   for(var i=0;i<newLinks.length;i++){(function(a){a.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();setBrand(a.getAttribute('data-brand'));document.querySelector('.nav-cat').classList.remove('open');document.getElementById('navMenu').classList.remove('open');document.getElementById('productos').scrollIntoView({behavior:'smooth'})})})(newLinks[i])}
 }
