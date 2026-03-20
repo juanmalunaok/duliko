@@ -20,6 +20,7 @@ function onAuth(u){
   document.getElementById('adminUser').textContent='Logueado: '+u.email;
   var lbl=document.getElementById('loginBtn');
   if(lbl){lbl.textContent=u.displayName||'Admin';lbl.classList.add('logged-in')}
+  loadDashboard();
   loadAdminList();
 }
 
@@ -37,10 +38,11 @@ function switchTab(t){
   var tabs=document.querySelectorAll('.a-tab');for(var i=0;i<tabs.length;i++)tabs[i].classList.remove('active');
   var cs=document.querySelectorAll('.tab-c');for(var i=0;i<cs.length;i++)cs[i].classList.remove('active');
   document.querySelector('.a-tab[data-tab="'+t+'"]').classList.add('active');
-  var tabId=t==='add'?'tabAdd':t==='novedades'?'tabNovedades':t==='archivos'?'tabArchivos':t==='portadas'?'tabPortadas':'tabList';
+  var tabId=t==='dashboard'?'tabDashboard':t==='add'?'tabAdd':t==='novedades'?'tabNovedades':t==='archivos'?'tabArchivos':t==='portadas'?'tabPortadas':'tabList';
   document.getElementById(tabId).classList.add('active');
   if(t==='list'||t==='novedades')loadAdminList();
   if(t==='portadas')loadBrandCovers();
+  if(t==='dashboard')loadDashboard();
 }
 
 function handlePreview(e){
@@ -269,6 +271,71 @@ function addBrand(){
   renderBrandSelect();
   updateCatalogMenu();
   document.getElementById('pCat').value=b;
+}
+
+var dashChartInstance=null;
+function loadDashboard(){
+  if(!db)return;
+  // Counts
+  var setNum=function(id,n){var el=document.getElementById(id);if(el)el.textContent=n};
+  db.collection('products').get().then(function(s){
+    setNum('dNumProd',s.size);
+    // Products per brand
+    var brandCount={};
+    customBrands.forEach(function(b){brandCount[b]=0});
+    s.forEach(function(d){
+      var p=d.data();
+      customBrands.forEach(function(b){if(p.category&&p.category.indexOf(b)>=0)brandCount[b]++});
+    });
+    renderDashChart(brandCount);
+    // Recent products
+    var recent=[];
+    s.forEach(function(d){var p=d.data();p._id=d.id;recent.push(p)});
+    recent.sort(function(a,b){var ta=a.createdAt?a.createdAt.seconds:0,tb=b.createdAt?b.createdAt.seconds:0;return tb-ta});
+    var rl=document.getElementById('dashRecentList');
+    if(rl){
+      if(!recent.length){rl.innerHTML='<p style="color:var(--text2);font-size:.85rem">Sin productos.</p>';return}
+      var h='';
+      for(var i=0;i<Math.min(5,recent.length);i++){
+        var p=recent[i];
+        h+='<div class="dash-recent-item"><img src="'+(p.image||HERO_IMG)+'" alt=""><div><div class="dash-recent-name">'+p.name+'</div><div class="dash-recent-cat">'+p.category+'</div></div></div>';
+      }
+      rl.innerHTML=h;
+    }
+  });
+  setNum('dNumMarcas',customBrands.length);
+  db.collection('novedades').get().then(function(s){setNum('dNumNov',s.size)});
+  db.collection('archivos').get().then(function(s){setNum('dNumArch',s.size)});
+}
+
+function renderDashChart(brandCount){
+  var canvas=document.getElementById('dashChart');
+  if(!canvas)return;
+  var labels=Object.keys(brandCount).filter(function(b){return brandCount[b]>0});
+  var values=labels.map(function(b){return brandCount[b]});
+  if(dashChartInstance){dashChartInstance.destroy();dashChartInstance=null}
+  dashChartInstance=new Chart(canvas,{
+    type:'bar',
+    data:{
+      labels:labels,
+      datasets:[{
+        label:'Productos',
+        data:values,
+        backgroundColor:'rgba(200,149,108,0.75)',
+        borderColor:'rgba(200,149,108,1)',
+        borderWidth:1,
+        borderRadius:6
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:11},maxRotation:45}},
+        y:{beginAtZero:true,ticks:{precision:0},grid:{color:'rgba(0,0,0,0.05)'}}
+      }
+    }
+  });
 }
 
 // Stubs — these elements exist only on the public page
