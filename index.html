@@ -23,10 +23,13 @@
 .hero-bg::after{opacity:0}
 .hero-scroll{position:absolute;bottom:32px;z-index:2}
 .hero-scroll svg{stroke:rgba(255,255,255,.4)}
-/* Mobile: imagen fluye a su tamaño natural, sin recorte ni zoom */
+/* Mobile: imagen entera arriba, logo y botones debajo apilados */
 @media(max-width:768px){
-  .hero{min-height:0}
-  .hero-img{position:static;width:100%;height:auto}
+  .hero{min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start}
+  .hero-img{position:static;width:100%;height:auto;order:1}
+  .hero-inner{position:static;transform:none;order:2;padding:32px 20px 24px;background:var(--bg)}
+  .hero-scroll{display:none}
+  .hero::before,.hero::after{display:none}
 }
 </style>
 </head>
