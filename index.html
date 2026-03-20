@@ -23,13 +23,15 @@
 .hero-bg::after{opacity:0}
 .hero-scroll{position:absolute;bottom:32px;z-index:2}
 .hero-scroll svg{stroke:rgba(255,255,255,.4)}
-/* Mobile: imagen completa a todo ancho, contenido anclado abajo */
+/* Mobile: hero a pantalla completa con imagen de fondo */
 @media(max-width:768px){
-  .hero{min-height:0;display:block}
-  .hero-img{position:static;width:100%;height:auto;display:block}
-  .hero-inner{position:absolute;top:auto;bottom:0;left:0;right:0;transform:none;width:100%;padding:20px 20px 28px;background:linear-gradient(to bottom,transparent,rgba(0,0,0,0.55))}
-  .hero-logo{height:72px;margin-bottom:12px}
-  .hero-btns{gap:10px}
+  .hero{min-height:88svh;background-image:url('assets/hero.jpg');background-size:cover;background-position:center top}
+  .hero-img{display:none}
+  .hero::before{background:rgba(0,0,0,0.40)}
+  .hero::after{display:none}
+  .hero-inner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100%;padding:0 28px;text-align:center}
+  .hero-logo{height:100px;margin-bottom:24px}
+  .hero-btns{gap:12px;justify-content:center}
   .hero-scroll{display:none}
 }
 </style>

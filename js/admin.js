@@ -276,11 +276,8 @@ function addBrand(){
 var dashChartInstance=null;
 function loadDashboard(){
   if(!db)return;
-  // Counts
-  var setNum=function(id,n){var el=document.getElementById(id);if(el)el.textContent=n};
   db.collection('products').get().then(function(s){
-    setNum('dNumProd',s.size);
-    // Products per brand
+    // Products per brand for chart
     var brandCount={};
     customBrands.forEach(function(b){brandCount[b]=0});
     s.forEach(function(d){
@@ -288,24 +285,22 @@ function loadDashboard(){
       customBrands.forEach(function(b){if(p.category&&p.category.indexOf(b)>=0)brandCount[b]++});
     });
     renderDashChart(brandCount);
-    // Recent products
+    // Recent products table
     var recent=[];
     s.forEach(function(d){var p=d.data();p._id=d.id;recent.push(p)});
     recent.sort(function(a,b){var ta=a.createdAt?a.createdAt.seconds:0,tb=b.createdAt?b.createdAt.seconds:0;return tb-ta});
     var rl=document.getElementById('dashRecentList');
     if(rl){
-      if(!recent.length){rl.innerHTML='<p style="color:var(--text2);font-size:.85rem">Sin productos.</p>';return}
-      var h='';
-      for(var i=0;i<Math.min(5,recent.length);i++){
+      if(!recent.length){rl.innerHTML='<p style="color:#aaa;font-size:.85rem">Sin productos.</p>';return}
+      var h='<table class="dash-recent-table"><thead><tr><th>Producto</th><th>Marca</th></tr></thead><tbody>';
+      for(var i=0;i<Math.min(6,recent.length);i++){
         var p=recent[i];
-        h+='<div class="dash-recent-item"><img src="'+(p.image||HERO_IMG)+'" alt=""><div><div class="dash-recent-name">'+p.name+'</div><div class="dash-recent-cat">'+p.category+'</div></div></div>';
+        h+='<tr><td><div class="dash-td-img"><img src="'+(p.image||HERO_IMG)+'" alt=""><span>'+p.name+'</span></div></td><td class="dash-td-cat">'+p.category+'</td></tr>';
       }
+      h+='</tbody></table>';
       rl.innerHTML=h;
     }
   });
-  setNum('dNumMarcas',customBrands.length);
-  db.collection('novedades').get().then(function(s){setNum('dNumNov',s.size)});
-  db.collection('archivos').get().then(function(s){setNum('dNumArch',s.size)});
 }
 
 function renderDashChart(brandCount){
