@@ -16,16 +16,19 @@ function loadBrands(){
     renderBrandsStatic(defaultBrands,{},grid);
     return;
   }
-  // Load meta config for brand list, then load all products to get images + counts
+  // Load meta config for brand list + custom cover images, then load all products to get images + counts
   db.collection('meta').doc('config').get().then(function(doc){
     var brands=defaultBrands;
-    if(doc.exists&&doc.data().brands&&doc.data().brands.length){
-      brands=doc.data().brands;
+    var brandImagesFromConfig={};
+    if(doc.exists){
+      var d=doc.data();
+      if(d.brands&&d.brands.length)brands=d.brands;
+      if(d.brandImages)brandImagesFromConfig=d.brandImages;
     }
     return db.collection('products').get().then(function(snap){
       // Group by brand: {brandName: {count, image}}
       var brandData={};
-      brands.forEach(function(b){brandData[b]={count:0,image:''};});
+      brands.forEach(function(b){brandData[b]={count:0,image:brandImagesFromConfig[b]||''};});
       snap.forEach(function(d){
         var p=d.data();
         var cat=p.category||'';

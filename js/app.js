@@ -36,9 +36,9 @@ function render(){
     for(var i=0;i<f.length;i++){
     var p=f[i];var b='';
     if(p.tags){for(var j=0;j<p.tags.length;j++){var t=p.tags[j];var cl=t==='Kosher'?'tag-kosher':t==='Sin TACC'?'tag-sintacc':t==='Vegano'?'tag-vegano':'tag-importado';b+='<span class="p-tag '+cl+'">'+t+'</span>'}}
-    var tagsOverlay=b?'<div class="p-tags-overlay">'+b+'</div>':'';
+    var tagsRow=b?'<div class="p-tags-row">'+b+'</div>':'';
     var stockBadge=(p.inStock===false)?'<div class="p-stock-badge">Sin stock</div>':'';
-    h+='<div class="p-card" style="cursor:pointer" data-pidx="'+i+'"><div class="p-card-img"><img src="'+(p.image||HERO_IMG)+'" alt="'+p.name+'" loading="lazy">'+tagsOverlay+stockBadge+'</div><div class="p-card-body"><div class="p-card-cat">'+p.category+'</div><h3 class="p-card-name">'+p.name+'</h3><p class="p-card-desc">'+(p.description||'')+'</p></div></div>';
+    h+='<div class="p-card" style="cursor:pointer" data-pidx="'+i+'"><div class="p-card-img"><img src="'+(p.image||HERO_IMG)+'" alt="'+p.name+'" loading="lazy">'+stockBadge+'</div><div class="p-card-body"><div class="p-card-cat">'+p.category+'</div><h3 class="p-card-name">'+p.name+'</h3><p class="p-card-desc">'+(p.description||'')+'</p>'+tagsRow+'</div></div>';
   }
   g.innerHTML=h;
   // Attach click handlers to product cards

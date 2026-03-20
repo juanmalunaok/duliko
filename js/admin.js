@@ -4,6 +4,7 @@ var customTags=["Sin TACC","Kosher","Importados","Orgánicos","Sin Lactosa","Veg
 var customBrands=["ALL RICE","Autenta Foods","Clic-Clac","Dame maní","Edemy","El Celta","Farfalej","Frisbix","Green Crops","Lulemúu","Magla","Mixme","Natural Pop","Osem - Nestle","Rodez","Yin Yang"];
 var selectedTags=[];
 var editingProductId=null;
+var brandImages={};
 
 function signInWithGoogle(){
   if(!auth){showErr('Firebase no configurado.');return}
@@ -36,9 +37,10 @@ function switchTab(t){
   var tabs=document.querySelectorAll('.a-tab');for(var i=0;i<tabs.length;i++)tabs[i].classList.remove('active');
   var cs=document.querySelectorAll('.tab-c');for(var i=0;i<cs.length;i++)cs[i].classList.remove('active');
   document.querySelector('.a-tab[data-tab="'+t+'"]').classList.add('active');
-  var tabId=t==='add'?'tabAdd':t==='novedades'?'tabNovedades':t==='archivos'?'tabArchivos':'tabList';
+  var tabId=t==='add'?'tabAdd':t==='novedades'?'tabNovedades':t==='archivos'?'tabArchivos':t==='portadas'?'tabPortadas':'tabList';
   document.getElementById(tabId).classList.add('active');
   if(t==='list'||t==='novedades')loadAdminList();
+  if(t==='portadas')loadBrandCovers();
 }
 
 function handlePreview(e){
@@ -282,10 +284,61 @@ function saveMeta(){
 function loadMeta(){
   if(!db)return;
   db.collection('meta').doc('config').get().then(function(doc){
-    if(doc.exists){var d=doc.data();if(d.tags&&d.tags.length)customTags=d.tags;if(d.brands&&d.brands.length)customBrands=d.brands;}
+    if(doc.exists){var d=doc.data();if(d.tags&&d.tags.length)customTags=d.tags;if(d.brands&&d.brands.length)customBrands=d.brands;if(d.brandImages)brandImages=d.brandImages;}
     renderTagChips();
     renderBrandSelect();
   }).catch(function(){renderTagChips();renderBrandSelect()});
+}
+
+function loadBrandCovers(){
+  if(!db){renderBrandCovers();return}
+  db.collection('meta').doc('config').get().then(function(doc){
+    if(doc.exists&&doc.data().brandImages)brandImages=doc.data().brandImages;
+    renderBrandCovers();
+  }).catch(function(){renderBrandCovers()});
+}
+
+function renderBrandCovers(){
+  var c=document.getElementById('tabPortadas');
+  if(!c)return;
+  var h='<div style="padding:16px"><h3 style="font-family:Space Grotesk,sans-serif;margin-bottom:4px">Portadas de marcas</h3>'
+    +'<p style="font-size:.85rem;color:var(--text2);margin-bottom:16px">Estas imágenes se muestran en la página de Nuestros Productos.</p>';
+  for(var i=0;i<customBrands.length;i++){
+    var b=customBrands[i];
+    var img=brandImages[b]||'';
+    h+='<div class="brand-cover-row">'
+      +'<div class="brand-cover-preview">'+(img?'<img src="'+img+'" alt="'+b+'">':'<span class="no-img">Sin imagen</span>')+'</div>'
+      +'<div class="brand-cover-info"><strong>'+b+'</strong>'
+      +'<input type="file" accept="image/*" data-brand="'+b+'" onchange="uploadBrandCover(\''+b.replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\'   ,this)" style="display:block;margin-top:6px;font-size:.82rem">'
+      +(img?'<button onclick="clearBrandCover(\''+b.replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\')" style="margin-top:4px;background:none;border:none;color:#DC503C;cursor:pointer;font-size:.82rem">✕ Quitar imagen</button>':'')
+      +'</div></div>';
+  }
+  h+='</div>';
+  c.innerHTML=h;
+}
+
+function uploadBrandCover(brand,input){
+  var file=input.files[0];
+  if(!file||!storage){showToast('Storage no configurado.','error');return}
+  input.disabled=true;
+  var ref=storage.ref('brands/'+Date.now()+'_'+file.name);
+  ref.put(file).then(function(){return ref.getDownloadURL()}).then(function(url){
+    brandImages[brand]=url;
+    saveBrandImages();
+    renderBrandCovers();
+    showToast('Portada actualizada','success');
+  }).catch(function(e){showToast('Error: '+e.message,'error');input.disabled=false});
+}
+
+function clearBrandCover(brand){
+  delete brandImages[brand];
+  saveBrandImages();
+  renderBrandCovers();
+}
+
+function saveBrandImages(){
+  if(!db)return;
+  db.collection('meta').doc('config').set({brandImages:brandImages},{merge:true});
 }
 
 function uploadFile(){
