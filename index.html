@@ -13,16 +13,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
 <style>
-.hero{min-height:0;display:block;height:auto}
-.hero-img{width:100%;height:auto;display:block}
-.hero-inner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100%}
+.hero{min-height:0;display:block;height:auto;position:relative}
+.hero-img{width:100%;height:auto;display:block;filter:brightness(0.82)}
+.hero::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,0.18);z-index:1;pointer-events:none}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:220px;background:linear-gradient(to bottom,transparent 0%,rgba(247,244,240,.15) 60%,rgba(247,244,240,.55) 82%,var(--bg) 100%);z-index:1;pointer-events:none}
+.hero-inner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100%;z-index:2}
 .hero-bg{display:none}
-.hero::after{display:none}
 .hero-bg::after{opacity:0}
-.hero .btn-ghost{color:var(--text);border-color:rgba(27,27,27,.25);background:rgba(255,255,255,.7)}
-.hero .btn-ghost:hover{background:rgba(255,255,255,.9);border-color:rgba(27,27,27,.5)}
-.hero-scroll svg{stroke:rgba(27,27,27,.3)}
-.hero-scroll{position:absolute;bottom:32px}
+.hero-scroll{position:absolute;bottom:32px;z-index:2}
+.hero-scroll svg{stroke:rgba(255,255,255,.4)}
 </style>
 </head>
 <body>
