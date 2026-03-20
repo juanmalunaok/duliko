@@ -3,6 +3,7 @@ var currentUser=null;
 var customTags=["Sin TACC","Kosher","Importados","Orgánicos","Sin Lactosa","Vegano"];
 var customBrands=["ALL RICE","Autenta Foods","Clic-Clac","Dame maní","Edemy","El Celta","Farfalej","Frisbix","Green Crops","Lulemúu","Magla","Mixme","Natural Pop","Osem - Nestle","Rodez","Yin Yang"];
 var selectedTags=[];
+var editingProductId=null;
 
 function signInWithGoogle(){
   if(!auth){showErr('Firebase no configurado.');return}
@@ -53,15 +54,76 @@ function saveProduct(){
   var d=document.getElementById('pDesc').value.trim();
   var tags=selectedTags.slice();
   var imgFile=document.getElementById('pImage').files[0];
+  var inStock=document.getElementById('pInStock')?document.getElementById('pInStock').checked:true;
   if(!n||!cat){showToast('Completá nombre y categoría.','error');return}
   if(!db){showToast('Firebase no configurado.','error');return}
   var btn=document.getElementById('saveProductBtn');btn.disabled=true;btn.textContent='Guardando...';
-  var p=Promise.resolve('');
-  if(imgFile&&storage){var ref=storage.ref('products/'+Date.now()+'_'+imgFile.name);p=ref.put(imgFile).then(function(){return ref.getDownloadURL()})}
-  p.then(function(url){return db.collection('products').add({name:n,category:cat,description:d,tags:tags,image:url||'',createdAt:firebase.firestore.FieldValue.serverTimestamp(),createdBy:currentUser.email})})
-  .then(function(){document.getElementById('pName').value='';document.getElementById('pCat').value='';document.getElementById('pDesc').value='';document.getElementById('pImage').value='';var pv=document.querySelector('.file-up .preview');if(pv)pv.remove();showToast('Producto guardado!','success')})
-  .catch(function(e){showToast('Error: '+e.message,'error')})
-  .finally(function(){btn.disabled=false;btn.textContent='Guardar Producto'});
+
+  if(editingProductId){
+    // UPDATE existing product
+    var p=Promise.resolve(null);
+    if(imgFile&&storage){var ref=storage.ref('products/'+Date.now()+'_'+imgFile.name);p=ref.put(imgFile).then(function(){return ref.getDownloadURL()})}
+    p.then(function(newUrl){
+      var data={name:n,category:cat,description:d,tags:tags,inStock:inStock};
+      if(newUrl)data.image=newUrl;
+      return db.collection('products').doc(editingProductId).update(data);
+    }).then(function(){
+      showToast('Producto actualizado!','success');
+      cancelEdit();
+      loadAdminList();
+    }).catch(function(e){showToast('Error: '+e.message,'error')})
+    .finally(function(){btn.disabled=false;btn.textContent='Actualizar Producto'});
+  } else {
+    // CREATE new product
+    var p=Promise.resolve('');
+    if(imgFile&&storage){var ref=storage.ref('products/'+Date.now()+'_'+imgFile.name);p=ref.put(imgFile).then(function(){return ref.getDownloadURL()})}
+    p.then(function(url){return db.collection('products').add({name:n,category:cat,description:d,tags:tags,inStock:inStock,image:url||'',createdAt:firebase.firestore.FieldValue.serverTimestamp(),createdBy:currentUser.email})})
+    .then(function(){document.getElementById('pName').value='';document.getElementById('pCat').value='';document.getElementById('pDesc').value='';document.getElementById('pImage').value='';selectedTags=[];renderTagChips();var pv=document.querySelector('.file-up .preview');if(pv)pv.remove();showToast('Producto guardado!','success');loadAdminList()})
+    .catch(function(e){showToast('Error: '+e.message,'error')})
+    .finally(function(){btn.disabled=false;btn.textContent='Guardar Producto'});
+  }
+}
+
+function editProduct(id){
+  if(!db)return;
+  db.collection('products').doc(id).get().then(function(doc){
+    if(!doc.exists)return;
+    var p=doc.data();
+    editingProductId=id;
+    switchTab('add');
+    document.getElementById('pName').value=p.name||'';
+    document.getElementById('pCat').value=p.category||'';
+    document.getElementById('pDesc').value=p.description||'';
+    var stockEl=document.getElementById('pInStock');
+    if(stockEl)stockEl.checked=(p.inStock!==false);
+    updateStockLabel();
+    selectedTags=p.tags?p.tags.slice():[];
+    renderTagChips();
+    var banner=document.getElementById('editBanner');
+    if(banner){banner.style.display='flex';}
+    var btn=document.getElementById('saveProductBtn');
+    if(btn)btn.textContent='Actualizar Producto';
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+}
+
+function cancelEdit(){
+  editingProductId=null;
+  document.getElementById('pName').value='';
+  document.getElementById('pCat').value='';
+  document.getElementById('pDesc').value='';
+  var stockEl=document.getElementById('pInStock');if(stockEl){stockEl.checked=true;updateStockLabel();}
+  document.getElementById('pImage').value='';
+  var pv=document.querySelector('.file-up .preview');if(pv)pv.remove();
+  selectedTags=[];renderTagChips();
+  var banner=document.getElementById('editBanner');if(banner)banner.style.display='none';
+  var btn=document.getElementById('saveProductBtn');if(btn)btn.textContent='Guardar Producto';
+}
+
+function updateStockLabel(){
+  var el=document.getElementById('stockLabel');
+  var ck=document.getElementById('pInStock');
+  if(el&&ck)el.textContent=ck.checked?'En stock':'Sin stock';
 }
 
 function loadAdminList(){
@@ -70,7 +132,7 @@ function loadAdminList(){
   l.innerHTML='<p style="text-align:center;padding:32px;color:var(--text2)">Cargando...</p>';
   db.collection('products').orderBy('createdAt','desc').get().then(function(s){
     if(s.empty){l.innerHTML='<p style="text-align:center;padding:32px;color:var(--text2)">Sin productos. Agregá uno nuevo.</p>';return}
-    var h='';s.forEach(function(doc){var p=doc.data();h+='<div class="a-item"><img class="a-thumb" src="'+(p.image||HERO_IMG)+'"><div class="a-info"><h4>'+p.name+'</h4><span>'+p.category+'</span></div><button class="a-del" onclick="deleteProduct(\''+doc.id+'\')">✕</button></div>'});
+    var h='';s.forEach(function(doc){var p=doc.data();var stockBadge=p.inStock===false?'<span class="a-stock out">Sin stock</span>':'<span class="a-stock in">En stock</span>';h+='<div class="a-item"><img class="a-thumb" src="'+(p.image||HERO_IMG)+'"><div class="a-info"><h4>'+p.name+stockBadge+'</h4><span>'+p.category+'</span></div><button class="btn-ed" onclick="editProduct(\''+doc.id+'\')" style="margin-right:6px">Editar</button><button class="a-del" onclick="deleteProduct(\''+doc.id+'\')">✕</button></div>'});
     l.innerHTML=h;
   });
   // Load novedades list too
@@ -280,6 +342,8 @@ document.addEventListener('DOMContentLoaded',function(){
 
   // Product image preview
   var pi=document.getElementById('pImage');if(pi)pi.addEventListener('change',handlePreview);
+  // Stock toggle label
+  var pis=document.getElementById('pInStock');if(pis)pis.addEventListener('change',updateStockLabel);
 
   // Save product
   var spb=document.getElementById('saveProductBtn');if(spb)spb.addEventListener('click',saveProduct);

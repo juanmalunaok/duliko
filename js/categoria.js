@@ -59,8 +59,10 @@ function renderCatProducts(products,g){
   for(var i=0;i<products.length;i++){
     var p=products[i];var b='';
     if(p.tags){for(var j=0;j<p.tags.length;j++){b+='<span class="p-tag">'+p.tags[j]+'</span>';}}
+    var tagsOverlay=b?'<div class="p-tags-overlay">'+b+'</div>':'';
+    var stockBadge=(p.inStock===false)?'<div class="p-stock-badge">Sin stock</div>':'';
     h+='<div class="p-card" style="cursor:pointer" data-idx="'+i+'">'
-      +'<div class="p-card-img"><img src="'+(p.image||HERO_IMG)+'" alt="'+p.name+'" loading="lazy">'+b+'</div>'
+      +'<div class="p-card-img"><img src="'+(p.image||HERO_IMG)+'" alt="'+p.name+'" loading="lazy">'+tagsOverlay+stockBadge+'</div>'
       +'<div class="p-card-body"><div class="p-card-cat">'+p.category+'</div>'
       +'<h3 class="p-card-name">'+p.name+'</h3>'
       +'<p class="p-card-desc">'+(p.description||'')+'</p></div></div>';
@@ -106,7 +108,7 @@ function openCatDetail(idx){
     for(var i=0;i<product.tags.length;i++){tagsHtml+='<span class="pd-tag">'+product.tags[i]+'</span>';}
   }
   document.getElementById('pdTags').innerHTML=tagsHtml;
-  var msg=encodeURIComponent('Hola, ¿cómo estás? Vi este producto en la Web y me interesaría tener más información. ¿Me podrías contar un poco más? Gracias.');
+  var msg=encodeURIComponent('Hola! Me interesa el producto "'+product.name+'" que vi en su web. ¿Me podrían dar más información? Gracias!');
   document.getElementById('pdWhatsApp').href='https://wa.me/5491157044003?text='+msg;
   modal.classList.add('show');
   document.body.style.overflow='hidden';

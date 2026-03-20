@@ -36,7 +36,9 @@ function render(){
     for(var i=0;i<f.length;i++){
     var p=f[i];var b='';
     if(p.tags){for(var j=0;j<p.tags.length;j++){var t=p.tags[j];var cl=t==='Kosher'?'tag-kosher':t==='Sin TACC'?'tag-sintacc':t==='Vegano'?'tag-vegano':'tag-importado';b+='<span class="p-tag '+cl+'">'+t+'</span>'}}
-    h+='<div class="p-card" style="cursor:pointer" data-pidx="'+i+'"><div class="p-card-img"><img src="'+(p.image||HERO_IMG)+'" alt="'+p.name+'" loading="lazy">'+b+'</div><div class="p-card-body"><div class="p-card-cat">'+p.category+'</div><h3 class="p-card-name">'+p.name+'</h3><p class="p-card-desc">'+(p.description||'')+'</p></div></div>';
+    var tagsOverlay=b?'<div class="p-tags-overlay">'+b+'</div>':'';
+    var stockBadge=(p.inStock===false)?'<div class="p-stock-badge">Sin stock</div>':'';
+    h+='<div class="p-card" style="cursor:pointer" data-pidx="'+i+'"><div class="p-card-img"><img src="'+(p.image||HERO_IMG)+'" alt="'+p.name+'" loading="lazy">'+tagsOverlay+stockBadge+'</div><div class="p-card-body"><div class="p-card-cat">'+p.category+'</div><h3 class="p-card-name">'+p.name+'</h3><p class="p-card-desc">'+(p.description||'')+'</p></div></div>';
   }
   g.innerHTML=h;
   // Attach click handlers to product cards
@@ -119,7 +121,7 @@ function openProductDetail(idx){
     }
   }
   document.getElementById('pdTags').innerHTML=tagsHtml;
-  var msg=encodeURIComponent('Hola, ¿cómo estás? Vi este producto en la Web y me interesaría tener más información. ¿Me podrías contar un poco más? Gracias.');
+  var msg=encodeURIComponent('Hola! Me interesa el producto "'+product.name+'" que vi en su web. ¿Me podrían dar más información? Gracias!');
   document.getElementById('pdWhatsApp').href='https://wa.me/5491157044003?text='+msg;
   modal.classList.add('show');
   document.body.style.overflow='hidden';
@@ -196,11 +198,11 @@ document.addEventListener('DOMContentLoaded',function(){
     var heroH=heroSection.offsetHeight;
     var p=Math.min(Math.max(sy/heroH,0),1);
 
-    // Scale: bloom to 1.28 at p≈0.18, then shrink to 0.58 at p=1
-    var scale=p<=0.18
-      ?1+(p/0.18)*0.28
-      :1.28-((p-0.18)/0.82)*0.70;
-    scale=Math.max(0.58,scale);
+    // Scale: crece durante los 2 primeros scrolls (p=0→0.62), baja en el 3ero (p=0.62→1)
+    var scale=p<=0.62
+      ?1+(p/0.62)*0.42
+      :1.42-((p-0.62)/0.38)*0.90;
+    scale=Math.max(0.52,scale);
 
     // Parallax: logo floats up at 48% of scroll speed
     var ty=-(sy*0.48);

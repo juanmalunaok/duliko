@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nuestros Productos — Duliko SRL</title>
+<link rel="icon" type="image/png" href="assets/logo.png">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.brands-page-wrap{padding-top:76px}
+.brands-page-header{padding:56px clamp(20px,4vw,48px) 40px;max-width:1200px;margin:0 auto;text-align:center}
+.brands-grid{max-width:1200px;margin:0 auto;padding:0 clamp(20px,4vw,48px) 80px;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:28px}
+.brand-card{background:var(--bg-card);border-radius:var(--r);overflow:hidden;border:1px solid var(--border);transition:all .35s var(--ease);opacity:0;transform:translateY(40px)}
+.brand-card.in-view{opacity:1;transform:none}
+.brand-card.in-view:hover{transform:translateY(-6px);box-shadow:0 22px 52px rgba(0,0,0,.13);border-color:transparent}
+.brand-card-img{height:200px;background-size:cover;background-position:center;background-color:var(--bg);position:relative;overflow:hidden}
+.brand-card-img::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.4) 0%,transparent 60%)}
+.brand-card-img img{width:100%;height:100%;object-fit:contain;padding:16px;background:var(--bg);transition:transform .5s var(--ease)}
+.brand-card:hover .brand-card-img img{transform:scale(1.05)}
+.brand-card-body{padding:20px 22px 24px}
+.brand-card-name{font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text);margin-bottom:6px}
+.brand-card-count{font-size:.82rem;color:var(--text2);margin-bottom:16px}
+.brand-card-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 22px;background:var(--accent);color:#fff;border-radius:var(--rp);text-decoration:none;font-size:.88rem;font-weight:600;transition:all .25s var(--ease)}
+.brand-card-btn:hover{background:var(--accent-hover);transform:translateY(-1px)}
+.brand-card-btn svg{width:14px;height:14px}
+.brands-loading{grid-column:1/-1;text-align:center;padding:80px 20px;color:var(--text2)}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <a href="index.html" class="nav-brand">
+    <img src="assets/logo.png" alt="Duliko">
+    <span>Duliko</span>
+  </a>
+  <div style="display:flex;align-items:center;gap:16px;margin-left:auto">
+    <a href="index.html" class="cat-nav-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Inicio
+    </a>
+    <a href="index.html#contacto" class="cat-nav-back" style="margin-left:0">Contacto</a>
+  </div>
+</nav>
+
+<div class="brands-page-wrap">
+
+  <div class="brands-page-header">
+    <p class="section-label">Catálogo</p>
+    <h1 class="section-title">Nuestros Productos</h1>
+    <p class="section-desc">Explorá todas nuestras líneas y marcas. Hacé click en "Ver más" para conocer cada producto.</p>
+  </div>
+
+  <div class="brands-grid" id="brandsGrid">
+    <div class="brands-loading">Cargando marcas...</div>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand"><img src="assets/logo.png" alt="Duliko"><span>Duliko</span></div>
+    <div class="footer-links">
+      <a href="index.html#empresa">La Empresa</a>
+      <a href="productos.html">Productos</a>
+      <a href="index.html#contacto">Contacto</a>
+      <a href="https://www.instagram.com/duliko.ok" target="_blank" rel="noopener">Instagram</a>
+      <a href="legales.html">Legales</a>
+    </div>
+  </div>
+  <div class="footer-legal">
+    <p>Duliko SRL — CUIT: 30-71502000-5 — Ciudad Autónoma de Buenos Aires, Argentina</p>
+    <p>Las imágenes de los productos son a modo ilustrativo. Los productos pueden variar según disponibilidad.</p>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2026 Duliko SRL — Todos los derechos reservados.</span>
+  </div>
+</footer>
+
+<div id="toast" class="toast"></div>
+
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/productos.js"></script>
+</body>
+</html>
