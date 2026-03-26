@@ -32,16 +32,16 @@
 @keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}
 /* Mobile */
 @media(max-width:768px){
-  .hero{height:100vw;min-height:0;background-image:url('assets/hero.png');background-size:cover;background-position:center center}
-  .hero-img{display:none}
-  .hero::before{background:rgba(0,0,0,0.42)}
+  .hero{min-height:0;background-image:none}
+  .hero-img{display:block;width:100%;height:auto;filter:brightness(0.72)}
+  .hero::before{background:rgba(0,0,0,0.38)}
   .hero::after{display:none}
-  .hero-inner{top:58%;left:50%;transform:translate(-50%,-50%);gap:12px;padding:0 24px}
-  .hero-logo{height:72px;margin-bottom:0}
+  .hero-inner{top:50%;left:50%;transform:translate(-50%,-50%);gap:14px;padding:0 20px}
+  .hero-logo{height:100px;margin-bottom:0}
   .hero-btns{gap:10px;justify-content:center;flex-wrap:wrap}
   .hero-scroll{display:none}
-  .hero-tagline-script{font-size:clamp(1.5rem,6vw,2rem)}
-  .hero-tagline-bold{font-size:clamp(0.75rem,2.8vw,1rem);white-space:normal;text-align:center}
+  .hero-tagline-script{font-size:clamp(1.9rem,7.5vw,2.6rem)}
+  .hero-tagline-bold{font-size:clamp(0.95rem,3.5vw,1.3rem);white-space:normal;text-align:center}
 }
 </style>
 </head>
