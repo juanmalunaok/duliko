@@ -22,22 +22,30 @@ function render(){
     if(ms&&mt&&mb)f.push(p);
   }
   if(c){
-    var cText=f.length+' producto'+(f.length!==1?'s':'')+(activeTag!=='todos'?' \u00b7 '+activeTag:'');
+    var L=window.LANG||'es';
+    var prodWord=L==='en'?'product'+(f.length!==1?'s':''):L==='pt'?'produto'+(f.length!==1?'s':''):'producto'+(f.length!==1?'s':'');
+    var inWord=L==='en'?' in ':L==='pt'?' em ':' en ';
+    var catLink=L==='en'?'View full catalog \u2192':L==='pt'?'Ver cat\u00e1logo completo \u2192':'Ver cat\u00e1logo completo \u2192';
+    var cText=f.length+' '+prodWord+(activeTag!=='todos'?' \u00b7 '+activeTag:'');
     if(activeBrand!=='todas'){
-      c.innerHTML='<span>'+cText+' en <strong>'+activeBrand+'</strong></span>'
-        +'<a href="categoria.html?cat='+encodeURIComponent(activeBrand)+'" class="ver-cat-link">Ver catálogo completo \u2192</a>';
+      c.innerHTML='<span>'+cText+inWord+'<strong>'+activeBrand+'</strong></span>'
+        +'<a href="categoria.html?cat='+encodeURIComponent(activeBrand)+'" class="ver-cat-link">'+catLink+'</a>';
     } else {
       c.textContent=cText;
     }
   }
-  if(!f.length){g.innerHTML='<div class="no-results"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><h3 style="margin-bottom:6px">No encontramos productos</h3><p>Probá con otros términos</p></div>';return}
+  var L2=window.LANG||'es';
+  var noResH=L2==='en'?'No products found':L2==='pt'?'Nenhum produto encontrado':'No encontramos productos';
+  var noResP=L2==='en'?'Try other terms':L2==='pt'?'Tente outros termos':'Probá con otros términos';
+  if(!f.length){g.innerHTML='<div class="no-results"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><h3 style="margin-bottom:6px">'+noResH+'</h3><p>'+noResP+'</p></div>';return}
   var h='';
   window._fp=f;
     for(var i=0;i<f.length;i++){
     var p=f[i];var b='';
     if(p.tags){for(var j=0;j<p.tags.length;j++){var t=p.tags[j];var cl=t==='Kosher'?'tag-kosher':t==='Sin TACC'?'tag-sintacc':t==='Vegano'?'tag-vegano':'tag-importado';b+='<span class="p-tag '+cl+'">'+t+'</span>'}}
     var tagsRow=b?'<div class="p-tags-row">'+b+'</div>':'';
-    var stockBadge=(p.inStock===false)?'<div class="p-stock-badge">Sin stock</div>':'';
+    var L3=window.LANG||'es';var stockTxt=L3==='en'?'Out of stock':L3==='pt'?'Sem estoque':'Sin stock';
+    var stockBadge=(p.inStock===false)?'<div class="p-stock-badge">'+stockTxt+'</div>':'';
     h+='<div class="p-card" style="cursor:pointer" data-pidx="'+i+'"><div class="p-card-img"><img src="'+(p.image||HERO_IMG)+'" alt="'+p.name+'" loading="lazy">'+stockBadge+'</div><div class="p-card-body"><div class="p-card-cat">'+p.category+'</div><h3 class="p-card-name">'+p.name+'</h3><p class="p-card-desc">'+(p.description||'')+'</p>'+tagsRow+'</div></div>';
   }
   g.innerHTML=h;
@@ -70,7 +78,8 @@ function render(){
 
 function setBrand(b){
   activeBrand=b;
-  document.getElementById('brandLabel').textContent=b==='todas'?'Todas las marcas':b;
+  var L4=window.LANG||'es';var allBrandsText=L4==='en'?'All brands':L4==='pt'?'Todas as marcas':'Todas las marcas';
+  document.getElementById('brandLabel').textContent=b==='todas'?allBrandsText:b;
   var btn=document.getElementById('brandSelBtn');
   if(b!=='todas'){btn.classList.add('active')}else{btn.classList.remove('active')}
   var opts=document.querySelectorAll('.brand-opt');
