@@ -18,7 +18,7 @@
 .hero-img{width:100%;height:auto;display:block;filter:brightness(0.82)}
 .hero::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,0.18);z-index:1;pointer-events:none}
 .hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:220px;background:linear-gradient(to bottom,transparent 0%,rgba(247,244,240,.15) 60%,rgba(247,244,240,.55) 82%,var(--bg) 100%);z-index:1;pointer-events:none}
-.hero-inner{position:absolute;top:42%;left:50%;transform:translate(-50%,-50%);width:100%;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 28px;box-sizing:border-box;gap:14px}
+.hero-inner{position:absolute;top:35%;left:50%;transform:translate(-50%,-50%);width:100%;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 28px;box-sizing:border-box;gap:14px}
 .hero-left{display:flex;flex-direction:column;align-items:center}
 .hero-bg{display:none}
 .hero-bg::after{opacity:0}
@@ -36,7 +36,7 @@
   .hero-img{display:none}
   .hero::before{background:rgba(0,0,0,0.45)}
   .hero::after{display:none}
-  .hero-inner{gap:16px}
+  .hero-inner{top:50%;gap:16px}
   .hero-logo{height:90px;margin-bottom:0}
   .hero-btns{gap:12px;justify-content:center}
   .hero-scroll{display:none}
