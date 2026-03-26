@@ -133,17 +133,11 @@
           typeText(el2, line2, 45, function() {
             // 3. Pausa al terminar
             setTimeout(function() {
-              // 4. Borra línea 2
+              // 4. Borra solo línea 2
               eraseText(el2, 22, function() {
-                // 5. Mueve cursor a línea 1 y borra
+                // 5. Quita cursor, línea 1 queda estática
                 if (cursor.parentNode) cursor.parentNode.removeChild(cursor);
-                el1.appendChild(cursor);
-                eraseText(el1, 26, function() {
-                  // 6. Quita cursor y escribe línea 1 estática
-                  if (cursor.parentNode) cursor.parentNode.removeChild(cursor);
-                  clearEl(el2);
-                  el1.textContent = line1;
-                });
+                clearEl(el2);
               });
             }, 2200);
           });
