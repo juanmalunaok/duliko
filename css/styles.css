@@ -90,6 +90,17 @@ html,body{overflow-x:hidden;max-width:100vw}
 .brand-sel.open .brand-sel-btn svg{transform:rotate(180deg)}
 .brand-sel-menu{position:absolute;top:calc(100% + 6px);left:0;min-width:240px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--rs);box-shadow:var(--shadow-xl);padding:6px;max-height:320px;overflow-y:auto;opacity:0;visibility:hidden;transform:translateY(6px);transition:all .3s var(--ease);z-index:50}
 .brand-sel.open .brand-sel-menu{opacity:1;visibility:visible;transform:translateY(0)}
+.filter-drop{position:relative}
+.filter-drop-btn{display:flex;align-items:center;gap:6px;padding:10px 24px;border:1.5px solid var(--border);border-radius:var(--rp);font-family:'Inter',sans-serif;font-size:.95rem;font-weight:500;cursor:pointer;color:var(--text2);background:var(--bg-card);transition:all .25s var(--ease)}
+.filter-drop-btn:hover{border-color:var(--accent);color:var(--accent)}
+.filter-drop-btn.active{background:var(--text);border-color:var(--text);color:#fff}
+.filter-drop-btn svg{width:12px;height:12px;transition:transform .3s var(--ease)}
+.filter-drop.open .filter-drop-btn svg{transform:rotate(180deg)}
+.filter-drop-menu{position:absolute;top:calc(100% + 6px);left:0;min-width:220px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--rs);box-shadow:var(--shadow-xl);padding:6px;max-height:320px;overflow-y:auto;opacity:0;visibility:hidden;transform:translateY(6px);transition:all .3s var(--ease);z-index:50}
+.filter-drop.open .filter-drop-menu{opacity:1;visibility:visible;transform:translateY(0)}
+.cat-tag-opt{padding:9px 14px;border-radius:8px;font-size:.88rem;cursor:pointer;transition:all .2s var(--ease);color:var(--text2)}
+.cat-tag-opt:hover{background:var(--bg-warm);color:var(--text)}
+.cat-tag-opt.active{color:var(--accent);font-weight:600}
 .brand-opt{padding:9px 14px;border-radius:8px;font-size:.88rem;cursor:pointer;transition:all .2s var(--ease);color:var(--text2)}
 .brand-opt:hover{background:var(--bg-warm);color:var(--text)}
 .brand-opt.active{color:var(--accent);font-weight:600}

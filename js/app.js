@@ -78,10 +78,8 @@ function render(){
 
 function setBrand(b){
   activeBrand=b;
-  var L4=window.LANG||'es';var allBrandsText=L4==='en'?'All brands':L4==='pt'?'Todas as marcas':'Todas las marcas';
-  document.getElementById('brandLabel').textContent=b==='todas'?allBrandsText:b;
-  var btn=document.getElementById('brandSelBtn');
-  if(b!=='todas'){btn.classList.add('active')}else{btn.classList.remove('active')}
+  var btn=document.getElementById('brandsDropBtn');
+  if(btn){if(b!=='todas'){btn.classList.add('active')}else{btn.classList.remove('active')}}
   var opts=document.querySelectorAll('.brand-opt');
   for(var i=0;i<opts.length;i++){if(opts[i].getAttribute('data-brand')===b){opts[i].classList.add('active')}else{opts[i].classList.remove('active')}}
   render();
@@ -171,16 +169,35 @@ function updateFilterPills(){
     var tagLinks=catCol.querySelectorAll('a[data-tag]');
     for(var i=0;i<tagLinks.length;i++){(function(a){a.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();activeTag=a.getAttribute('data-tag');render();document.querySelector('.nav-cat').classList.remove('open');document.getElementById('navMenu').classList.remove('open');document.getElementById('productos').scrollIntoView({behavior:'smooth'})})})(tagLinks[i])}
   }
-  // Update pills in products bar
-  var bar=document.querySelector('.products-bar .pills');
-  // Also update brand dropdown
-  var bsel=document.getElementById('brandSelOpts');
-  if(bsel){
-    var bh='<div class="brand-opt active" data-brand="todas">Todas</div>';
+  // Update brands dropdown menu
+  var brandMenuEl=document.getElementById('brandsDropMenu');
+  if(brandMenuEl){
+    var bh='<div class="brand-opt active" data-brand="todas">Todas las marcas</div>';
     for(var i=0;i<customBrands.length;i++){
       bh+='<div class="brand-opt" data-brand="'+customBrands[i]+'">'+customBrands[i]+'</div>';
     }
-    bsel.innerHTML=bh;
+    brandMenuEl.innerHTML=bh;
+    var newBOpts=brandMenuEl.querySelectorAll('.brand-opt');
+    for(var i=0;i<newBOpts.length;i++){(function(o){o.addEventListener('click',function(){setBrand(o.getAttribute('data-brand'));var bd2=document.getElementById('brandsDrop');if(bd2)bd2.classList.remove('open');var tb=document.getElementById('todosBtn');if(tb)tb.classList.remove('active')})})(newBOpts[i])}
+  }
+  // Update categories dropdown menu
+  var catMenuEl=document.getElementById('catsDropMenu');
+  if(catMenuEl){
+    var ch='';
+    for(var i=0;i<customTags.length;i++){
+      ch+='<div class="cat-tag-opt" data-tag="'+customTags[i]+'">'+customTags[i]+'</div>';
+    }
+    catMenuEl.innerHTML=ch;
+    var newCOpts=catMenuEl.querySelectorAll('.cat-tag-opt');
+    for(var i=0;i<newCOpts.length;i++){(function(o){o.addEventListener('click',function(){
+      activeTag=o.getAttribute('data-tag');
+      var allC=catMenuEl.querySelectorAll('.cat-tag-opt');for(var j=0;j<allC.length;j++)allC[j].classList.remove('active');
+      o.classList.add('active');
+      var cBtn2=document.getElementById('catsDropBtn');if(cBtn2)cBtn2.classList.add('active');
+      var tb=document.getElementById('todosBtn');if(tb)tb.classList.remove('active');
+      var cd2=document.getElementById('catsDrop');if(cd2)cd2.classList.remove('open');
+      render();
+    })})(newCOpts[i])}
   }
 }
 
@@ -288,16 +305,44 @@ document.addEventListener('DOMContentLoaded',function(){
   // Search
   document.getElementById('searchInput').addEventListener('input',render);
 
-  // Tag pills
-  var pills=document.querySelectorAll('.pill[data-tag]');
-  for(var i=0;i<pills.length;i++){(function(p){p.addEventListener('click',function(){for(var j=0;j<pills.length;j++)pills[j].classList.remove('active');p.classList.add('active');activeTag=p.getAttribute('data-tag');render()})})(pills[i])}
+  // Todos pill
+  var todosBtn=document.getElementById('todosBtn');
+  if(todosBtn){todosBtn.addEventListener('click',function(){
+    activeTag='todos';activeBrand='todas';
+    todosBtn.classList.add('active');
+    var bBtn=document.getElementById('brandsDropBtn');if(bBtn)bBtn.classList.remove('active');
+    var cBtn=document.getElementById('catsDropBtn');if(cBtn)cBtn.classList.remove('active');
+    var cOpts=document.querySelectorAll('#catsDropMenu .cat-tag-opt');for(var j=0;j<cOpts.length;j++)cOpts[j].classList.remove('active');
+    var bOpts2=document.querySelectorAll('.brand-opt');for(var j=0;j<bOpts2.length;j++){if(bOpts2[j].getAttribute('data-brand')==='todas'){bOpts2[j].classList.add('active')}else{bOpts2[j].classList.remove('active')}}
+    render();
+  });}
 
-  // Brand dropdown
-  var bs=document.getElementById('brandSel');
-  document.getElementById('brandSelBtn').addEventListener('click',function(e){e.stopPropagation();bs.classList.toggle('open')});
-  var opts=document.querySelectorAll('.brand-opt');
-  for(var i=0;i<opts.length;i++){(function(o){o.addEventListener('click',function(){setBrand(o.getAttribute('data-brand'));bs.classList.remove('open')})})(opts[i])}
-  document.addEventListener('click',function(e){if(!e.target.closest('.brand-sel'))bs.classList.remove('open')});
+  // Brands dropdown
+  var brandsDrop=document.getElementById('brandsDrop');
+  if(brandsDrop){
+    document.getElementById('brandsDropBtn').addEventListener('click',function(e){e.stopPropagation();brandsDrop.classList.toggle('open');var cd=document.getElementById('catsDrop');if(cd)cd.classList.remove('open')});
+    var bOpts=document.querySelectorAll('#brandsDropMenu .brand-opt');
+    for(var i=0;i<bOpts.length;i++){(function(o){o.addEventListener('click',function(){setBrand(o.getAttribute('data-brand'));brandsDrop.classList.remove('open');if(todosBtn)todosBtn.classList.remove('active')})})(bOpts[i])}
+    document.addEventListener('click',function(e){if(!e.target.closest('#brandsDrop'))brandsDrop.classList.remove('open')});
+  }
+
+  // Categories dropdown
+  var catsDrop=document.getElementById('catsDrop');
+  if(catsDrop){
+    document.getElementById('catsDropBtn').addEventListener('click',function(e){e.stopPropagation();catsDrop.classList.toggle('open');var bd=document.getElementById('brandsDrop');if(bd)bd.classList.remove('open')});
+    var cOpts=document.querySelectorAll('#catsDropMenu .cat-tag-opt');
+    for(var i=0;i<cOpts.length;i++){(function(o){o.addEventListener('click',function(){
+      activeTag=o.getAttribute('data-tag');
+      var allCatOpts=document.querySelectorAll('#catsDropMenu .cat-tag-opt');
+      for(var j=0;j<allCatOpts.length;j++)allCatOpts[j].classList.remove('active');
+      o.classList.add('active');
+      var cBtn=document.getElementById('catsDropBtn');if(cBtn)cBtn.classList.add('active');
+      if(todosBtn)todosBtn.classList.remove('active');
+      catsDrop.classList.remove('open');
+      render();
+    })})(cOpts[i])}
+    document.addEventListener('click',function(e){if(!e.target.closest('#catsDrop'))catsDrop.classList.remove('open')});
+  }
 
   // Admin login button — navigate to admin.html
   var loginBtn=document.getElementById('loginBtn');

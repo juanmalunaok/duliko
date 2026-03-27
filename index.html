@@ -37,11 +37,11 @@
   .hero::before{background:rgba(0,0,0,0.38)}
   .hero::after{display:block;height:140px}
   .hero-inner{top:0;left:0;right:0;bottom:0;transform:none;position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:70px 20px 20px;gap:10px;box-sizing:border-box}
-  .hero-logo{height:70px;margin-bottom:0}
+  .hero-logo{height:95px;margin-bottom:0}
   .hero-btns{gap:10px;justify-content:center;flex-wrap:wrap}
   .hero-scroll{display:none}
-  .hero-tagline-script{font-size:clamp(1.6rem,6.5vw,2.2rem)}
-  .hero-tagline-bold{font-size:clamp(0.8rem,3vw,1.1rem);white-space:normal;text-align:center}
+  .hero-tagline-script{font-size:clamp(2.2rem,8.5vw,3rem)}
+  .hero-tagline-bold{font-size:clamp(1.05rem,4vw,1.45rem);white-space:normal;text-align:center}
 }
 </style>
 </head>
@@ -62,8 +62,8 @@
 <div class="nav-langs" id="navLangs"><button class="lang-flag active" data-lang="es" title="Español"><img src="https://flagcdn.com/w40/ar.png" alt="ES"></button><button class="lang-flag" data-lang="en" title="English"><img src="https://flagcdn.com/w40/us.png" alt="EN"></button><button class="lang-flag" data-lang="pt" title="Português"><img src="https://flagcdn.com/w40/br.png" alt="PT"></button></div>
 <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
 </nav>
-<section class="hero" style="position:relative"><img src="assets/hero.png" class="hero-img" alt=""><div class="hero-inner"><img src="assets/logo.png" alt="Duliko" class="hero-logo"><div class="hero-text-block"><span class="hero-tagline-script" id="heroScript"></span><span class="hero-tagline-bold" id="heroBold"></span></div><div class="hero-btns"><a href="#productos" class="btn btn-ghost">Ver Productos</a><a href="#contacto" class="btn btn-ghost">Contactanos</a></div></div><div class="hero-scroll"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></div></section>
-<section id="productos" class="section products"><div class="section-header"><p class="section-label">Catálogo</p><h2 class="section-title" data-es="Nuestros Productos" data-en="Our Products" data-pt="Nossos Produtos">Nuestros Productos</h2><p class="section-desc">Explorá nuestro catálogo completo.</p></div><div class="products-bar"><div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" id="searchInput" placeholder="Buscar productos, marcas..."></div><div class="filters-row"><button class="pill active" data-tag="todos">Todos</button><button class="pill" data-tag="Sin TACC">Sin TACC</button><button class="pill" data-tag="Kosher">Kosher</button><button class="pill" data-tag="Importado">Importados</button><div class="brand-sel" id="brandSel"><button class="brand-sel-btn" id="brandSelBtn"><span id="brandLabel">Todas las marcas</span> <svg viewBox="0 0 12 12"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button><div class="brand-sel-menu" id="brandSelMenu"><div class="brand-opt active" data-brand="todas">Todas las marcas</div><div class="brand-opt" data-brand="ALL RICE">ALL RICE</div><div class="brand-opt" data-brand="Autenta Foods">Autenta Foods</div><div class="brand-opt" data-brand="Clic-Clac">Clic-Clac</div><div class="brand-opt" data-brand="Dame maní">Dame maní</div><div class="brand-opt" data-brand="Edemy">Edemy</div><div class="brand-opt" data-brand="El Celta">El Celta</div><div class="brand-opt" data-brand="Farfalej">Farfalej</div><div class="brand-opt" data-brand="Frisbix">Frisbix</div><div class="brand-opt" data-brand="Green Crops">Green Crops</div><div class="brand-opt" data-brand="Lulemúu">Lulemúu</div><div class="brand-opt" data-brand="Magla">Magla</div><div class="brand-opt" data-brand="Mixme">Mixme</div><div class="brand-opt" data-brand="Natural Pop">Natural Pop</div><div class="brand-opt" data-brand="Osem - Nestle">Osem - Nestlé</div><div class="brand-opt" data-brand="Rodez">Rodez</div><div class="brand-opt" data-brand="Yin Yang">Yin Yang</div></div></div></div></div><div class="products-count" id="productsCount"></div><div class="products-grid" id="productsGrid"></div></section>
+<section class="hero" style="position:relative"><img src="assets/hero.png" class="hero-img" alt=""><div class="hero-inner"><img src="assets/logo.png" alt="Duliko" class="hero-logo"><div class="hero-text-block"><span class="hero-tagline-script" id="heroScript"></span><span class="hero-tagline-bold" id="heroBold"></span></div><div class="hero-btns"><a href="#productos" class="btn btn-ghost" data-es="Ver Productos" data-en="View Products" data-pt="Ver Produtos">Ver Productos</a><a href="#contacto" class="btn btn-ghost" data-es="Contactanos" data-en="Contact Us" data-pt="Contato">Contactanos</a></div></div><div class="hero-scroll"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg></div></section>
+<section id="productos" class="section products"><div class="section-header"><p class="section-label">Catálogo</p><h2 class="section-title" data-es="Nuestros Productos" data-en="Our Products" data-pt="Nossos Produtos">Nuestros Productos</h2><p class="section-desc">Explorá nuestro catálogo completo.</p></div><div class="products-bar"><div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input type="text" id="searchInput" placeholder="Buscar productos, marcas..."></div><div class="filters-row"><button class="pill active" id="todosBtn" data-tag="todos" data-es="Todos" data-en="All" data-pt="Todos">Todos</button><div class="filter-drop" id="brandsDrop"><button class="filter-drop-btn" id="brandsDropBtn"><span data-es="Marcas" data-en="Brands" data-pt="Marcas">Marcas</span> <svg viewBox="0 0 12 12"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button><div class="filter-drop-menu" id="brandsDropMenu"><div class="brand-opt active" data-brand="todas">Todas las marcas</div><div class="brand-opt" data-brand="ALL RICE">ALL RICE</div><div class="brand-opt" data-brand="Autenta Foods">Autenta Foods</div><div class="brand-opt" data-brand="Clic-Clac">Clic-Clac</div><div class="brand-opt" data-brand="Dame maní">Dame maní</div><div class="brand-opt" data-brand="Edemy">Edemy</div><div class="brand-opt" data-brand="El Celta">El Celta</div><div class="brand-opt" data-brand="Farfalej">Farfalej</div><div class="brand-opt" data-brand="Frisbix">Frisbix</div><div class="brand-opt" data-brand="Green Crops">Green Crops</div><div class="brand-opt" data-brand="Lulemúu">Lulemúu</div><div class="brand-opt" data-brand="Magla">Magla</div><div class="brand-opt" data-brand="Mixme">Mixme</div><div class="brand-opt" data-brand="Natural Pop">Natural Pop</div><div class="brand-opt" data-brand="Osem - Nestle">Osem - Nestlé</div><div class="brand-opt" data-brand="Rodez">Rodez</div><div class="brand-opt" data-brand="Yin Yang">Yin Yang</div></div></div><div class="filter-drop" id="catsDrop"><button class="filter-drop-btn" id="catsDropBtn"><span data-es="Categorías" data-en="Categories" data-pt="Categorias">Categorías</span> <svg viewBox="0 0 12 12"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button><div class="filter-drop-menu" id="catsDropMenu"><div class="cat-tag-opt" data-tag="Sin TACC">Sin TACC</div><div class="cat-tag-opt" data-tag="Kosher">Kosher</div><div class="cat-tag-opt" data-tag="Importados">Importados</div><div class="cat-tag-opt" data-tag="Orgánicos">Orgánicos</div><div class="cat-tag-opt" data-tag="Sin Lactosa">Sin Lactosa</div><div class="cat-tag-opt" data-tag="Vegano">Vegano</div></div></div></div></div><div class="products-count" id="productsCount"></div><div class="products-grid" id="productsGrid"></div></section>
 <section id="novedades" class="section novedades"><div class="section-header"><p class="section-label" data-es="Novedades" data-en="News" data-pt="Novidades">Novedades</p><h2 class="section-title" data-es="Últimas novedades" data-en="Latest News" data-pt="Últimas novidades">Últimas novedades</h2><p class="section-desc" data-es="Enterate de las últimas incorporaciones y noticias." data-en="Find out about the latest additions and news." data-pt="Fique por dentro das últimas incorporações e novidades.">Enterate de las últimas incorporaciones y noticias.</p></div><div class="novedades-grid" id="novedadesGrid"><div class="nov-card"><div class="nov-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" style="width:32px;height:32px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div><span class="nov-date">Próximamente</span><h3>Nuevas líneas en camino</h3><p data-i18n-html data-es="Estamos incorporando nuevas líneas de productos. ¡Seguinos en <a href='https://www.instagram.com/duliko.ok' target='_blank' rel='noopener'>Instagram</a> para enterarte primero!" data-en="We are adding new product lines. Follow us on <a href='https://www.instagram.com/duliko.ok' target='_blank' rel='noopener'>Instagram</a> to be the first to know!" data-pt="Estamos incorporando novas linhas de produtos. Siga-nos no <a href='https://www.instagram.com/duliko.ok' target='_blank' rel='noopener'>Instagram</a> para saber primeiro!">Estamos incorporando nuevas líneas de productos. ¡Seguinos en <a href="https://www.instagram.com/duliko.ok" target="_blank" rel="noopener">Instagram</a> para enterarte primero!</p></div><div class="nov-card"><div class="nov-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" style="width:32px;height:32px"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></div><span class="nov-date">Seguinos</span><h3>@duliko.ok en Instagram</h3><p data-es="Enterate de lanzamientos, promociones y más novedades siguiéndonos en nuestras redes." data-en="Find out about launches, promotions and more by following us on our social media." data-pt="Fique por dentro de lançamentos, promoções e mais novidades seguindo-nos nas nossas redes.">Enterate de lanzamientos, promociones y más novedades siguiéndonos en nuestras redes.</p></div></div></section>
 <section id="descargas" class="section descargas"><div class="section-header"><p class="section-label">Descargas</p><h2 class="section-title" data-es="Archivos y catálogos" data-en="Files and catalogs" data-pt="Arquivos e catálogos">Archivos y catálogos</h2><p class="section-desc" data-es="Descargá nuestros catálogos y materiales." data-en="Download our catalogs and materials." data-pt="Baixe nossos catálogos e materiais.">Descargá nuestros catálogos y materiales.</p></div><div class="files-grid" id="filesGrid"><p style="text-align:center;padding:32px;color:var(--text2)" data-es="No hay archivos disponibles." data-en="No files available." data-pt="Nenhum arquivo disponível.">No hay archivos disponibles.</p></div></section>
 
@@ -103,9 +103,13 @@
   var line2 = heroLines.es.l2;
   var el1 = document.getElementById('heroScript');
   var el2 = document.getElementById('heroBold');
+  var animAborted = false;
   window._heroUpdateLang = function(lang){
+    animAborted = true;
     var l=heroLines[lang]||heroLines.es;
-    if(el1)el1.textContent=l.l1;
+    if(el1){while(el1.firstChild)el1.removeChild(el1.firstChild);el1.textContent=l.l1;}
+    if(el2){while(el2.firstChild)el2.removeChild(el2.firstChild);}
+    if(cursor.parentNode)cursor.parentNode.removeChild(cursor);
   };
   var cursor = document.createElement('span');
   cursor.className = 'hero-cursor';
@@ -117,6 +121,7 @@
     clearEl(el);
     el.appendChild(cursor);
     (function tick() {
+      if(animAborted)return;
       if (i < text.length) {
         cursor.before(document.createTextNode(text[i++]));
         setTimeout(tick, speed + Math.random() * 28);
@@ -126,6 +131,7 @@
 
   function eraseText(el, speed, onDone) {
     (function tick() {
+      if(animAborted)return;
       var prev = cursor.previousSibling;
       if (prev) { el.removeChild(prev); setTimeout(tick, speed); }
       else { if (onDone) onDone(); }
@@ -134,16 +140,20 @@
 
   window.addEventListener('load', function() {
     setTimeout(function() {
+      if(animAborted)return;
       // 1. Escribe línea 1
       typeText(el1, line1, 65, function() {
         setTimeout(function() {
+          if(animAborted)return;
           // 2. Escribe línea 2
           if (cursor.parentNode) cursor.parentNode.removeChild(cursor);
           typeText(el2, line2, 45, function() {
             // 3. Pausa al terminar
             setTimeout(function() {
+              if(animAborted)return;
               // 4. Borra solo línea 2
               eraseText(el2, 22, function() {
+                if(animAborted)return;
                 // 5. Quita cursor, línea 1 queda estática
                 if (cursor.parentNode) cursor.parentNode.removeChild(cursor);
                 clearEl(el2);
