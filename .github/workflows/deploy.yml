@@ -18,6 +18,8 @@ jobs:
           username: u668359514.dulikosrl
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
+          protocol: ftps
+          security: loose
           server-dir: /public_html/
           exclude: |
             **/.git*
