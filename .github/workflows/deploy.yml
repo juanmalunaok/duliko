@@ -14,7 +14,7 @@ jobs:
       - name: Subir archivos via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ftp.dulikosrl.com
+          server: 46.202.183.217
           username: u668359514.dulikosrl
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
