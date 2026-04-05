@@ -130,14 +130,39 @@ function updateStockLabel(){
   if(el&&ck)el.textContent=ck.checked?'En stock':'Sin stock';
 }
 
+var _dragSrc=null;
+
+function initDragDrop(list){
+  var items=list.querySelectorAll('.a-item[draggable]');
+  for(var i=0;i<items.length;i++){(function(el){
+    el.addEventListener('dragstart',function(e){_dragSrc=el;e.dataTransfer.effectAllowed='move';setTimeout(function(){el.style.opacity='0.4'},0)});
+    el.addEventListener('dragend',function(){el.style.opacity='';var all=list.querySelectorAll('.a-item');for(var j=0;j<all.length;j++)all[j].classList.remove('drag-over');saveProductOrder(list)});
+    el.addEventListener('dragover',function(e){e.preventDefault();e.dataTransfer.dropEffect='move'});
+    el.addEventListener('dragenter',function(){if(el!==_dragSrc)el.classList.add('drag-over')});
+    el.addEventListener('dragleave',function(){el.classList.remove('drag-over')});
+    el.addEventListener('drop',function(e){e.preventDefault();if(_dragSrc&&_dragSrc!==el){var items=Array.from(list.querySelectorAll('.a-item'));var si=items.indexOf(_dragSrc);var ti=items.indexOf(el);if(si<ti){el.parentNode.insertBefore(_dragSrc,el.nextSibling)}else{el.parentNode.insertBefore(_dragSrc,el)}}el.classList.remove('drag-over')});
+  })(items[i])}
+}
+
+function saveProductOrder(list){
+  if(!db)return;
+  var items=list.querySelectorAll('.a-item[data-id]');
+  var batch=db.batch();
+  for(var i=0;i<items.length;i++){batch.update(db.collection('products').doc(items[i].getAttribute('data-id')),{order:i})}
+  batch.commit().then(function(){showToast('Orden guardado','success')}).catch(function(e){showToast('Error al guardar orden','error')});
+}
+
 function loadAdminList(){
   var l=document.getElementById('adminProductsList');
   if(!db){l.innerHTML='<p style="text-align:center;padding:32px;color:var(--text2)">Conectá Firebase para gestionar productos.</p>';return}
   l.innerHTML='<p style="text-align:center;padding:32px;color:var(--text2)">Cargando...</p>';
-  db.collection('products').orderBy('createdAt','desc').get().then(function(s){
+  db.collection('products').get().then(function(s){
     if(s.empty){l.innerHTML='<p style="text-align:center;padding:32px;color:var(--text2)">Sin productos. Agregá uno nuevo.</p>';return}
-    var h='';s.forEach(function(doc){var p=doc.data();var stockBadge=p.inStock===false?'<span class="a-stock out">Sin stock</span>':'<span class="a-stock in">En stock</span>';h+='<div class="a-item"><img class="a-thumb" src="'+(p.image||HERO_IMG)+'"><div class="a-info"><h4>'+p.name+stockBadge+'</h4><span>'+p.category+'</span></div><button class="btn-ed" onclick="editProduct(\''+doc.id+'\')" style="margin-right:6px">Editar</button><button class="a-del" onclick="deleteProduct(\''+doc.id+'\')">✕</button></div>'});
+    var prods=[];s.forEach(function(doc){var p=doc.data();p._id=doc.id;prods.push(p)});
+    prods.sort(function(a,b){var ao=a.order!=null?a.order:99999,bo=b.order!=null?b.order:99999;if(ao!==bo)return ao-bo;var ta=a.createdAt?a.createdAt.seconds:0,tb=b.createdAt?b.createdAt.seconds:0;return tb-ta});
+    var h='';prods.forEach(function(p){var stockBadge=p.inStock===false?'<span class="a-stock out">Sin stock</span>':'<span class="a-stock in">En stock</span>';h+='<div class="a-item" draggable="true" data-id="'+p._id+'"><div class="drag-handle" title="Arrastrar para reordenar">⠿</div><img class="a-thumb" src="'+(p.image||HERO_IMG)+'"><div class="a-info"><h4>'+p.name+stockBadge+'</h4><span>'+p.category+'</span></div><button class="btn-ed" onclick="editProduct(\''+p._id+'\')" style="margin-right:6px">Editar</button><button class="a-del" onclick="deleteProduct(\''+p._id+'\')">✕</button></div>'});
     l.innerHTML=h;
+    initDragDrop(l);
   });
   // Load novedades list too
   var nl=document.getElementById('adminNovedadesList');

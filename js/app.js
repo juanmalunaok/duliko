@@ -5,7 +5,7 @@ var customTags=["Sin TACC","Kosher","Importados","Orgánicos","Sin Lactosa","Veg
 var customBrands=["ALL RICE","Autenta Foods","Clic-Clac","Dame maní","Edemy","El Celta","Farfalej","Frisbix","Green Crops","Lulemúu","Magla","Mixme","Natural Pop","Osem - Nestle","Rodez","Yin Yang"];
 
 function loadProducts(){
-  if(db){db.collection('products').orderBy('createdAt','desc').onSnapshot(function(s){allProducts=s.docs.map(function(d){var o=d.data();o.id=d.id;return o});render()},function(){allProducts=DEMO;render()})}
+  if(db){db.collection('products').onSnapshot(function(s){allProducts=s.docs.map(function(d){var o=d.data();o.id=d.id;return o});allProducts.sort(function(a,b){var ao=a.order!=null?a.order:99999,bo=b.order!=null?b.order:99999;if(ao!==bo)return ao-bo;var ta=a.createdAt?a.createdAt.seconds:0,tb=b.createdAt?b.createdAt.seconds:0;return tb-ta});render()},function(){allProducts=DEMO;render()})}
   else{allProducts=DEMO;render()}
 }
 
