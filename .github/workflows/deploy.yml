@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Subir archivos via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -21,7 +23,6 @@ jobs:
           protocol: ftps
           security: loose
           server-dir: /
-          dangerous-clean-slate: true
           exclude: |
             **/.git*
             **/.git*/**
