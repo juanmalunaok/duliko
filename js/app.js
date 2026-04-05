@@ -128,7 +128,8 @@ function openProductDetail(idx){
     }
   }
   document.getElementById('pdTags').innerHTML=tagsHtml;
-  var msg=encodeURIComponent('Hola! Me interesa el producto "'+product.name+'" que vi en su web. ¿Me podrían dar más información? Gracias!');
+  var imgUrl=product.image||HERO_IMG;
+  var msg=encodeURIComponent('Hola! Me interesa el producto "'+product.name+'" que vi en su web. ¿Me podrían dar más información?\n\n🖼️ Ver imagen del producto: '+imgUrl+'\n\nGracias!');
   document.getElementById('pdWhatsApp').href='https://wa.me/5491157044003?text='+msg;
   modal.classList.add('show');
   document.body.style.overflow='hidden';
