@@ -184,7 +184,7 @@ function updateFilterPills(){
   // Update categories dropdown menu
   var catMenuEl=document.getElementById('catsDropMenu');
   if(catMenuEl){
-    var ch='';
+    var ch='<div class="cat-tag-opt active" data-tag="todos">Todas las categorías</div>';
     for(var i=0;i<customTags.length;i++){
       ch+='<div class="cat-tag-opt" data-tag="'+customTags[i]+'">'+customTags[i]+'</div>';
     }
@@ -194,7 +194,8 @@ function updateFilterPills(){
       activeTag=o.getAttribute('data-tag');
       var allC=catMenuEl.querySelectorAll('.cat-tag-opt');for(var j=0;j<allC.length;j++)allC[j].classList.remove('active');
       o.classList.add('active');
-      var cBtn2=document.getElementById('catsDropBtn');if(cBtn2)cBtn2.classList.add('active');
+      var cBtn2=document.getElementById('catsDropBtn');
+      if(activeTag==='todos'){if(cBtn2)cBtn2.classList.remove('active')}else{if(cBtn2)cBtn2.classList.add('active')}
       var tb=document.getElementById('todosBtn');if(tb)tb.classList.remove('active');
       var cd2=document.getElementById('catsDrop');if(cd2)cd2.classList.remove('open');
       render();
