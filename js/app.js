@@ -1,6 +1,6 @@
 var HERO_IMG='assets/hero.jpg';
 var DEMO=[]
-var allProducts=[],activeTag='todos',activeBrand='todas',currentUser=null;
+var allProducts=[],activeTag='todos',activeBrand='todas',currentUser=null,visibleCount=12,_lastFilterKey='';
 var customTags=["Sin TACC","Kosher","Importados","Orgánicos","Sin Lactosa","Vegano"];
 var customBrands=["ALL RICE","Autenta Foods","Clic-Clac","Dame maní","Edemy","El Celta","Farfalej","Frisbix","Green Crops","Lulemúu","Magla","Mixme","Natural Pop","Osem - Nestle","Rodez","Yin Yang"];
 
@@ -13,6 +13,8 @@ function render(){
   var g=document.getElementById('productsGrid');
   var c=document.getElementById('productsCount');
   var q=(document.getElementById('searchInput').value||'').toLowerCase().trim();
+  var fk=q+'|'+activeTag+'|'+activeBrand;
+  if(fk!==_lastFilterKey){visibleCount=12;_lastFilterKey=fk;}
   var f=[];
   for(var i=0;i<allProducts.length;i++){
     var p=allProducts[i];
@@ -21,6 +23,7 @@ function render(){
     var mb=activeBrand==='todas'||p.category.indexOf(activeBrand)>=0;
     if(ms&&mt&&mb)f.push(p);
   }
+  window._fp=f;
   if(c){
     var L=window.LANG||'es';
     var prodWord=L==='en'?'product'+(f.length!==1?'s':''):L==='pt'?'produto'+(f.length!==1?'s':''):'producto'+(f.length!==1?'s':'');
@@ -34,14 +37,15 @@ function render(){
       c.textContent=cText;
     }
   }
+  var lmb=document.getElementById('loadMoreBtn');
   var L2=window.LANG||'es';
   var noResH=L2==='en'?'No products found':L2==='pt'?'Nenhum produto encontrado':'No encontramos productos';
   var noResP=L2==='en'?'Try other terms':L2==='pt'?'Tente outros termos':'Probá con otros términos';
-  if(!f.length){g.innerHTML='<div class="no-results"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><h3 style="margin-bottom:6px">'+noResH+'</h3><p>'+noResP+'</p></div>';return}
+  if(!f.length){g.innerHTML='<div class="no-results"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><h3 style="margin-bottom:6px">'+noResH+'</h3><p>'+noResP+'</p></div>';if(lmb)lmb.style.display='none';return}
+  var visible=f.slice(0,visibleCount);
   var h='';
-  window._fp=f;
-    for(var i=0;i<f.length;i++){
-    var p=f[i];var b='';
+  for(var i=0;i<visible.length;i++){
+    var p=visible[i];var b='';
     if(p.tags){for(var j=0;j<p.tags.length;j++){var t=p.tags[j];var cl=t==='Kosher'?'tag-kosher':t==='Sin TACC'?'tag-sintacc':t==='Vegano'?'tag-vegano':'tag-importado';b+='<span class="p-tag '+cl+'">'+t+'</span>'}}
     var tagsRow=b?'<div class="p-tags-row">'+b+'</div>':'';
     var L3=window.LANG||'es';var stockTxt=L3==='en'?'Out of stock':L3==='pt'?'Sem estoque':'Sin stock';
@@ -49,6 +53,7 @@ function render(){
     h+='<div class="p-card" style="cursor:pointer" data-pidx="'+i+'"><div class="p-card-img"><img src="'+(p.image||HERO_IMG)+'" alt="'+p.name+'" loading="lazy">'+stockBadge+'</div><div class="p-card-body"><div class="p-card-cat">'+p.category+'</div><h3 class="p-card-name">'+p.name+'</h3><p class="p-card-desc">'+(p.description||'')+'</p>'+tagsRow+'</div></div>';
   }
   g.innerHTML=h;
+  if(lmb)lmb.style.display=visibleCount<f.length?'':'none';
   // Attach click handlers to product cards
   var cards=g.querySelectorAll('.p-card');
   for(var ci=0;ci<cards.length;ci++){
@@ -345,6 +350,10 @@ document.addEventListener('DOMContentLoaded',function(){
     })})(cOpts[i])}
     document.addEventListener('click',function(e){if(!e.target.closest('#catsDrop'))catsDrop.classList.remove('open')});
   }
+
+  // Load more button
+  var loadMoreBtn=document.getElementById('loadMoreBtn');
+  if(loadMoreBtn){loadMoreBtn.addEventListener('click',function(){visibleCount+=12;render();});}
 
   // Admin login button — navigate to admin.html
   var loginBtn=document.getElementById('loginBtn');
