@@ -145,7 +145,7 @@ function updateCatalogMenu(){
   if(!col)return;
   var links=col.querySelectorAll('a');
   // Rebuild brand links
-  var h='<h4 class="cat-col-title">Líneas</h4><a href="#productos" data-brand="todas">Ver todas</a>';
+  var h='<h4 class="cat-col-title">Marcas</h4><a href="#productos" data-brand="todas">Ver todas</a>';
   for(var i=0;i<customBrands.length;i++){
     h+='<div class="cat-brand-row">'
       +'<a href="#productos" data-brand="'+customBrands[i]+'">'+customBrands[i]+'</a>'
