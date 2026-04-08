@@ -4,9 +4,31 @@ var allProducts=[],activeTag='todos',activeBrand='todas',currentUser=null,visibl
 var customTags=["Sin TACC","Kosher","Importados","Orgánicos","Sin Lactosa","Vegano"];
 var customBrands=["ALL RICE","Autenta Foods","Clic-Clac","Dame maní","Edemy","El Celta","Farfalej","Frisbix","Green Crops","Lulemúu","Magla","Mixme","Natural Pop","Osem - Nestle","Rodez","Yin Yang"];
 
+var _CACHE_KEY='duliko_products_v1';
+var _CACHE_TTL=30*60*1000;
+
+function _sortProducts(arr){arr.sort(function(a,b){var ao=a.order!=null?a.order:99999,bo=b.order!=null?b.order:99999;if(ao!==bo)return ao-bo;var ta=a.createdAt?a.createdAt.seconds:0,tb=b.createdAt?b.createdAt.seconds:0;return tb-ta});return arr}
+
+function showSkeleton(){
+  var g=document.getElementById('productsGrid');if(!g)return;
+  var h='';for(var i=0;i<12;i++){h+='<div class="p-card p-card-skeleton"><div class="p-card-img skel"></div><div class="p-card-body"><span class="skel skel-cat"></span><span class="skel skel-name"></span><span class="skel skel-desc"></span></div></div>';}
+  g.innerHTML=h;
+}
+
 function loadProducts(){
-  if(db){db.collection('products').onSnapshot(function(s){allProducts=s.docs.map(function(d){var o=d.data();o.id=d.id;return o});allProducts.sort(function(a,b){var ao=a.order!=null?a.order:99999,bo=b.order!=null?b.order:99999;if(ao!==bo)return ao-bo;var ta=a.createdAt?a.createdAt.seconds:0,tb=b.createdAt?b.createdAt.seconds:0;return tb-ta});render()},function(){allProducts=DEMO;render()})}
-  else{allProducts=DEMO;render()}
+  // 1. Render from cache immediately if fresh
+  try{var raw=localStorage.getItem(_CACHE_KEY);if(raw){var obj=JSON.parse(raw);if(obj&&obj.ts&&(Date.now()-obj.ts)<_CACHE_TTL&&obj.products&&obj.products.length){allProducts=obj.products;render();}}}catch(e){}
+  // 2. Show skeleton if no cached data yet
+  if(!allProducts.length)showSkeleton();
+  // 3. Fetch fresh data once
+  if(db){
+    db.collection('products').get().then(function(s){
+      var fresh=s.docs.map(function(d){var o=d.data();o.id=d.id;return o});
+      _sortProducts(fresh);allProducts=fresh;
+      try{localStorage.setItem(_CACHE_KEY,JSON.stringify({products:fresh,ts:Date.now()}))}catch(e){}
+      render();
+    }).catch(function(){if(!allProducts.length){allProducts=DEMO;render();}});
+  }else{if(!allProducts.length){allProducts=DEMO;render();}}
 }
 
 function render(){

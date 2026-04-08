@@ -20,11 +20,9 @@
 <meta name="twitter:image" content="https://www.dulikosrl.com/assets/hero.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Duliko SRL","url":"https://www.dulikosrl.com","logo":"https://www.dulikosrl.com/assets/logo.png","foundingDate":"1979","description":"Distribuidora de alimentos especializada en productos kosher, sin TACC, orgánicos, importados y veganos.","address":{"@type":"PostalAddress","addressLocality":"Ciudad Autónoma de Buenos Aires","addressCountry":"AR"},"contactPoint":{"@type":"ContactPoint","telephone":"+54-11-4834-9850","contactType":"customer service"},"sameAs":["https://www.instagram.com/duliko.ok"]}</script>
 <link rel="icon" type="image/png" href="assets/logo.png">
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://firestore.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css?v=3">
 <style>
@@ -46,6 +44,15 @@
 .hero-cursor{display:inline-block;width:3px;height:1em;background:#fff;margin-left:3px;vertical-align:middle;animation:cursorBlink 0.8s step-end infinite}
 @keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}
 /* Mobile */
+/* Skeleton loading */
+.p-card-skeleton{pointer-events:none}
+.p-card-skeleton .p-card-img{background:var(--border,#e8e0d5)!important}
+.skel{background:var(--border,#e8e0d5);border-radius:6px;display:block}
+.skel-cat{height:13px;width:38%;margin-bottom:10px}
+.skel-name{height:20px;width:72%;margin-bottom:8px}
+.skel-desc{height:13px;width:88%}
+@keyframes skel-pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.skel,.p-card-skeleton .p-card-img{animation:skel-pulse 1.4s ease-in-out infinite}
 @media(max-width:768px){
   .hero{min-height:85svh;background-image:none;position:relative}
   .hero-img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:center top;filter:brightness(0.75)}
@@ -103,10 +110,14 @@
 
 <div id="lightbox" class="lightbox" onclick="closeLightbox()"><img id="lightboxImg" src="" alt=""><button class="lb-close" onclick="closeLightbox()">✕</button></div>
 <div id="confirmModal" class="confirm-modal"><div class="confirm-box"><p id="confirmMsg"></p><div class="confirm-btns"><button class="confirm-yes" id="confirmYes">Sí, eliminar</button><button class="confirm-no" id="confirmNo">Cancelar</button></div></div></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 <script src="js/config.js?v=2"></script>
 <script src="js/utils.js?v=2"></script>
 <script src="js/lang.js?v=2"></script>
-<script src="js/app.js?v=4"></script>
+<script src="js/app.js?v=5"></script>
 <script>
 (function(){
   var heroLines = {
