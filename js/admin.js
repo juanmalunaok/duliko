@@ -52,6 +52,67 @@ function handlePreview(e){
   r.readAsDataURL(file);
 }
 
+// Comprime un File/Blob de imagen a max 900px y calidad 0.82 JPEG
+function compressImageFile(file, onDone, onError) {
+  var objectUrl = URL.createObjectURL(file);
+  var img = new Image();
+  img.onload = function() {
+    URL.revokeObjectURL(objectUrl);
+    var w = img.width, h = img.height, maxPx = 900;
+    if (w > maxPx || h > maxPx) { var r = Math.min(maxPx/w, maxPx/h); w = Math.round(w*r); h = Math.round(h*r); }
+    var c = document.createElement('canvas'); c.width = w; c.height = h;
+    c.getContext('2d').drawImage(img, 0, 0, w, h);
+    c.toBlob(function(b) { if(b) onDone(b); else onError('toBlob falló'); }, 'image/jpeg', 0.82);
+  };
+  img.onerror = function() { onError('No se pudo cargar la imagen'); };
+  img.src = objectUrl;
+}
+
+// Comprime todas las imágenes ya subidas en Firebase Storage
+function compressAllImages() {
+  if (!db || !storage) { showToast('Firebase no disponible', 'error'); return; }
+  var btn = document.getElementById('compressImagesBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Comprimiendo 0/...'; }
+  db.collection('products').get().then(function(s) {
+    var products = [];
+    s.forEach(function(doc) {
+      var p = doc.data();
+      if (p.image && p.image.indexOf('firebasestorage') !== -1) products.push({ id: doc.id, image: p.image });
+    });
+    if (!products.length) {
+      showToast('No hay imágenes para comprimir', 'success');
+      if (btn) { btn.disabled = false; btn.textContent = 'Comprimir imágenes existentes'; }
+      return;
+    }
+    var total = products.length, done = 0, errors = 0;
+    function next(idx) {
+      if (idx >= products.length) {
+        if (btn) { btn.disabled = false; btn.textContent = 'Comprimir imágenes existentes'; }
+        showToast('Listo: ' + done + ' comprimidas' + (errors ? ', ' + errors + ' errores' : ''), done > 0 ? 'success' : 'error');
+        return;
+      }
+      var prod = products[idx];
+      if (btn) btn.textContent = 'Comprimiendo ' + (idx+1) + '/' + total + '...';
+      // Fetch image as blob, compress, re-upload
+      fetch(prod.image).then(function(r) { return r.blob(); }).then(function(blob) {
+        return new Promise(function(resolve, reject) {
+          compressImageFile(blob, resolve, reject);
+        });
+      }).then(function(compressed) {
+        var ref = storage.ref('products/' + Date.now() + '_c.jpg');
+        return ref.put(compressed).then(function() { return ref.getDownloadURL(); });
+      }).then(function(newUrl) {
+        return db.collection('products').doc(prod.id).update({ image: newUrl });
+      }).then(function() { done++; next(idx + 1); })
+      .catch(function() { errors++; next(idx + 1); });
+    }
+    next(0);
+  }).catch(function(e) {
+    showToast('Error: ' + e.message, 'error');
+    if (btn) { btn.disabled = false; btn.textContent = 'Comprimir imágenes existentes'; }
+  });
+}
+
 function saveProduct(){
   var n=document.getElementById('pName').value.trim();
   var cat=document.getElementById('pCat').value;
@@ -66,7 +127,7 @@ function saveProduct(){
   if(editingProductId){
     // UPDATE existing product
     var p=Promise.resolve(null);
-    if(imgFile&&storage){var ref=storage.ref('products/'+Date.now()+'_'+imgFile.name);p=ref.put(imgFile).then(function(){return ref.getDownloadURL()})}
+    if(imgFile&&storage){p=new Promise(function(res,rej){compressImageFile(imgFile,res,rej)}).then(function(blob){var ref=storage.ref('products/'+Date.now()+'_'+imgFile.name);return ref.put(blob).then(function(){return ref.getDownloadURL()})})}
     p.then(function(newUrl){
       var data={name:n,category:cat,description:d,tags:tags,inStock:inStock};
       if(newUrl)data.image=newUrl;
@@ -80,7 +141,7 @@ function saveProduct(){
   } else {
     // CREATE new product
     var p=Promise.resolve('');
-    if(imgFile&&storage){var ref=storage.ref('products/'+Date.now()+'_'+imgFile.name);p=ref.put(imgFile).then(function(){return ref.getDownloadURL()})}
+    if(imgFile&&storage){p=new Promise(function(res,rej){compressImageFile(imgFile,res,rej)}).then(function(blob){var ref=storage.ref('products/'+Date.now()+'_'+imgFile.name);return ref.put(blob).then(function(){return ref.getDownloadURL()})})}
     p.then(function(url){return db.collection('products').add({name:n,category:cat,description:d,tags:tags,inStock:inStock,image:url||'',createdAt:firebase.firestore.FieldValue.serverTimestamp(),createdBy:currentUser.email})})
     .then(function(){document.getElementById('pName').value='';document.getElementById('pCat').value='';document.getElementById('pDesc').value='';document.getElementById('pImage').value='';selectedTags=[];renderTagChips();var pv=document.querySelector('.file-up .preview');if(pv)pv.remove();showToast('Producto guardado!','success');loadAdminList()})
     .catch(function(e){showToast('Error: '+e.message,'error')})
