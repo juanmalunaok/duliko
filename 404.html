@@ -7,7 +7,8 @@
 // Redirigir URLs viejas de Jimdo
 var path = window.location.pathname.toLowerCase();
 var dest = 'https://www.dulikosrl.com/';
-if (path.indexOf('producto') !== -1) dest = 'https://www.dulikosrl.com/productos.html';
+if (path.indexOf('contact') !== -1 || path.indexOf('ctenos') !== -1) dest = 'https://www.dulikosrl.com/#contacto';
+else if (path.indexOf('producto') !== -1) dest = 'https://www.dulikosrl.com/productos.html';
 window.location.replace(dest);
 </script>
 <meta http-equiv="refresh" content="0;url=https://www.dulikosrl.com/">
