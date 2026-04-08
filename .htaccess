@@ -1,4 +1,5 @@
 Options -Indexes
+ErrorDocument 404 /404.html
 RewriteEngine On
 
 # Redirigir URLs viejas de Jimdo a la web nueva
