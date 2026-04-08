@@ -15,12 +15,10 @@ function showSkeleton(){
   g.innerHTML=h;
 }
 
-function loadProducts(){
-  // 1. Render from cache immediately if fresh
+function _loadFromFirestore(){
+  // Try localStorage cache first
   try{var raw=localStorage.getItem(_CACHE_KEY);if(raw){var obj=JSON.parse(raw);if(obj&&obj.ts&&(Date.now()-obj.ts)<_CACHE_TTL&&obj.products&&obj.products.length){allProducts=obj.products;render();}}}catch(e){}
-  // 2. Show skeleton if no cached data yet
   if(!allProducts.length)showSkeleton();
-  // 3. Fetch fresh data once
   if(db){
     db.collection('products').get().then(function(s){
       var fresh=s.docs.map(function(d){var o=d.data();o.id=d.id;return o});
@@ -29,6 +27,22 @@ function loadProducts(){
       render();
     }).catch(function(){if(!allProducts.length){allProducts=DEMO;render();}});
   }else{if(!allProducts.length){allProducts=DEMO;render();}}
+}
+
+function loadProducts(){
+  // Try static catalog first (same server = instant load)
+  if(typeof loadStaticCatalog==='function'){
+    loadStaticCatalog(
+      function(prods){
+        allProducts=prods;_sortProducts(allProducts);
+        try{localStorage.setItem(_CACHE_KEY,JSON.stringify({products:allProducts,ts:Date.now()}))}catch(e){}
+        render();
+      },
+      function(){_loadFromFirestore();}
+    );
+  }else{
+    _loadFromFirestore();
+  }
 }
 
 function render(){

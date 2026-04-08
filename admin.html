@@ -197,6 +197,13 @@ body{min-height:100vh;display:flex;flex-direction:column;align-items:center;just
       <!-- RESUMEN -->
       <div id="tabDashboard" class="tab-c active">
         <div class="dash-recent">
+          <div style="background:var(--ad-card);border:1.5px solid var(--ad-border);border-radius:12px;padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+            <div>
+              <h3 style="margin:0 0 4px;font-size:1rem">Catálogo web</h3>
+              <p style="margin:0;font-size:.83rem;color:var(--ad-text2)">Publicá el catálogo para que los proveedores vean los productos al instante.</p>
+            </div>
+            <button id="publishCatalogBtn" onclick="runPublishCatalog()" style="background:var(--accent);color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:600;font-size:.88rem;white-space:nowrap">Publicar catálogo</button>
+          </div>
           <h3>Últimos productos agregados</h3>
           <div id="dashRecentList"><p style="color:var(--ad-text2);font-size:.85rem">Cargando...</p></div>
         </div>
@@ -273,6 +280,7 @@ body{min-height:100vh;display:flex;flex-direction:column;align-items:center;just
 <div id="confirmModal" class="confirm-modal"><div class="confirm-box"><p id="confirmMsg"></p><div class="confirm-btns"><button class="confirm-yes" id="confirmYes">Sí, eliminar</button><button class="confirm-no" id="confirmNo">Cancelar</button></div></div></div>
 <script src="js/config.js?v=2"></script>
 <script src="js/utils.js?v=2"></script>
+<script src="js/catalog-static.js?v=1"></script>
 <script src="js/admin.js?v=2"></script>
 </body>
 </html>

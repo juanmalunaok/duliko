@@ -318,6 +318,21 @@ function loadDashboard(){
   });
 }
 
+function runPublishCatalog(){
+  var btn=document.getElementById('publishCatalogBtn');
+  if(btn){btn.disabled=true;btn.textContent='Publicando...';}
+  publishStaticCatalog(
+    function(count){
+      showToast('Catálogo publicado ('+count+' productos)','success');
+      if(btn){btn.disabled=false;btn.textContent='Publicar catálogo';}
+    },
+    function(err){
+      showToast('Error al publicar: '+err,'error');
+      if(btn){btn.disabled=false;btn.textContent='Publicar catálogo';}
+    }
+  );
+}
+
 // Stubs — these elements exist only on the public page
 function updateCatalogMenu(){}
 function updateFilterPills(){}
