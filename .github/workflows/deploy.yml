@@ -23,6 +23,7 @@ jobs:
           protocol: ftps
           security: loose
           server-dir: /
+          timeout: 60000
           exclude: |
             **/.git*
             **/.git*/**
