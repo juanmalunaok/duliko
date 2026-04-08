@@ -137,6 +137,7 @@ function saveProduct(){
       showToast('Producto actualizado!','success');
       cancelEdit();
       loadAdminList();
+      autoPublish();
     }).catch(function(e){showToast('Error: '+e.message,'error')})
     .finally(function(){btn.disabled=false;btn.textContent='Actualizar Producto'});
   } else {
@@ -144,7 +145,7 @@ function saveProduct(){
     var p=Promise.resolve('');
     if(imgFile&&storage){p=new Promise(function(res,rej){compressImageFile(imgFile,res,rej)}).then(function(blob){var ref=storage.ref('products/'+Date.now()+'_'+imgFile.name);return ref.put(blob).then(function(){return ref.getDownloadURL()})})}
     p.then(function(url){return db.collection('products').add({name:n,category:cat,description:d,tags:tags,inStock:inStock,image:url||'',createdAt:firebase.firestore.FieldValue.serverTimestamp(),createdBy:currentUser.email})})
-    .then(function(){document.getElementById('pName').value='';document.getElementById('pCat').value='';document.getElementById('pDesc').value='';document.getElementById('pImage').value='';selectedTags=[];renderTagChips();var pv=document.querySelector('.file-up .preview');if(pv)pv.remove();showToast('Producto guardado!','success');loadAdminList()})
+    .then(function(){document.getElementById('pName').value='';document.getElementById('pCat').value='';document.getElementById('pDesc').value='';document.getElementById('pImage').value='';selectedTags=[];renderTagChips();var pv=document.querySelector('.file-up .preview');if(pv)pv.remove();showToast('Producto guardado!','success');loadAdminList();autoPublish();})
     .catch(function(e){showToast('Error: '+e.message,'error')})
     .finally(function(){btn.disabled=false;btn.textContent='Guardar Producto'});
   }
@@ -211,7 +212,7 @@ function saveProductOrder(list){
   var items=list.querySelectorAll('.a-item[data-id]');
   var batch=db.batch();
   for(var i=0;i<items.length;i++){batch.update(db.collection('products').doc(items[i].getAttribute('data-id')),{order:i})}
-  batch.commit().then(function(){showToast('Orden guardado','success')}).catch(function(e){showToast('Error al guardar orden','error')});
+  batch.commit().then(function(){showToast('Orden guardado','success');autoPublish()}).catch(function(e){showToast('Error al guardar orden','error')});
 }
 
 function loadAdminList(){
@@ -249,7 +250,7 @@ function loadAdminList(){
 function deleteProduct(id){
   customConfirm('¿Eliminar este producto?',function(){
     if(!db)return;
-    db.collection('products').doc(id).delete().then(function(){loadAdminList()}).catch(function(e){showToast('Error: '+e.message,'error')});
+    db.collection('products').doc(id).delete().then(function(){loadAdminList();autoPublish()}).catch(function(e){showToast('Error: '+e.message,'error')});
   });
 }
 
@@ -378,6 +379,12 @@ function loadDashboard(){
     h+='</tbody></table>';
     rl.innerHTML=h;
   });
+}
+
+function autoPublish(){
+  if(typeof publishStaticCatalog==='function'){
+    publishStaticCatalog(function(){},function(){});
+  }
 }
 
 function runPublishCatalog(){
