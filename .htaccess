@@ -6,7 +6,11 @@ RewriteEngine On
 # Usar RewriteRule con comodin para manejar caracteres especiales (á, é, etc.)
 RewriteRule ^cont.ctenos/?$ https://www.dulikosrl.com/ [R=301,L,NC]
 RewriteRule ^contactenos/?$ https://www.dulikosrl.com/ [R=301,L,NC]
-RewriteRule ^sitemap/?$ https://www.dulikosrl.com/sitemap.xml [R=301,L,NC]
+RewriteRule ^sitemap/?$ https://www.dulikosrl.com/ [R=301,L,NC]
+
+# Redirigir sitemap.xml al inicio solo cuando lo abre un navegador (no Google)
+RewriteCond %{HTTP_ACCEPT} text/html
+RewriteRule ^sitemap\.xml$ https://www.dulikosrl.com/ [R=301,L]
 RewriteRule ^sobre-nosotros/?$ https://www.dulikosrl.com/ [R=301,L,NC]
 RewriteRule ^productos/?$ https://www.dulikosrl.com/productos.html [R=301,L,NC]
 RewriteRule ^inicio/?$ https://www.dulikosrl.com/ [R=301,L,NC]
