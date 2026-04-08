@@ -166,7 +166,7 @@ function updateCatalogMenu(){
 function updateFilterPills(){
   var catCol=document.querySelectorAll('.cat-col')[1];
   if(catCol){
-    var h='<h4 class="cat-col-title">Categorías</h4><a href="#productos" data-tag="todas">Todas las categorías</a>';
+    var h='<h4 class="cat-col-title">Categorías</h4><a href="#productos" data-tag="todos">Todas las categorías</a>';
     for(var i=0;i<customTags.length;i++){
       h+='<a href="#productos" data-tag="'+customTags[i]+'">'+customTags[i]+'</a>';
     }
