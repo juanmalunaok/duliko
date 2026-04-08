@@ -100,19 +100,20 @@ function render(){
     })(ci);
   }
 
-  // Scroll-triggered entrance animation (NK-style)
+  // Scroll-triggered entrance animation
   var io=new IntersectionObserver(function(entries){
     entries.forEach(function(e){
       if(e.isIntersecting){
         var el=e.target;
         el.classList.add('in-view');
-        setTimeout(function(){el.style.transitionDelay='';},900);
+        setTimeout(function(){el.style.transitionDelay='';},500);
         io.unobserve(el);
       }
     });
-  },{threshold:0.08,rootMargin:'0px 0px -24px 0px'});
+  },{threshold:0.05,rootMargin:'0px 0px 80px 0px'});
   for(var ri=0;ri<cards.length;ri++){
-    cards[ri].style.transitionDelay=(ri*0.07)+'s';
+    // Only stagger the first 4 cards; the rest appear without extra delay
+    cards[ri].style.transitionDelay=(ri<4?(ri*0.06):0)+'s';
     io.observe(cards[ri]);
   }
 }
