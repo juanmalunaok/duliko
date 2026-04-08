@@ -4,8 +4,8 @@ RewriteEngine On
 
 # Redirigir URLs viejas de Jimdo a la web nueva
 # Usar RewriteRule con comodin para manejar caracteres especiales (á, é, etc.)
-RewriteRule ^cont.ctenos/?$ https://www.dulikosrl.com/ [R=301,L,NC]
-RewriteRule ^contactenos/?$ https://www.dulikosrl.com/ [R=301,L,NC]
+RewriteRule ^cont.ctenos/?$ https://www.dulikosrl.com/#contacto [R=301,L,NC]
+RewriteRule ^contactenos/?$ https://www.dulikosrl.com/#contacto [R=301,L,NC]
 RewriteRule ^sitemap/?$ https://www.dulikosrl.com/ [R=301,L,NC]
 
 # Redirigir sitemap.xml al inicio solo cuando lo abre un navegador (no Google)
