@@ -2,9 +2,10 @@ Options -Indexes
 RewriteEngine On
 
 # Redirigir URLs viejas de Jimdo a la web nueva
-RedirectMatch 301 ^/cont%C3%A1ctenos/?$ https://www.dulikosrl.com/
-RedirectMatch 301 ^/contactenos/?$ https://www.dulikosrl.com/
-RedirectMatch 301 ^/sitemap/?$ https://www.dulikosrl.com/sitemap.xml
-RedirectMatch 301 ^/sobre-nosotros/?$ https://www.dulikosrl.com/
-RedirectMatch 301 ^/productos/?$ https://www.dulikosrl.com/productos.html
-RedirectMatch 301 ^/inicio/?$ https://www.dulikosrl.com/
+# Usar RewriteRule con comodin para manejar caracteres especiales (á, é, etc.)
+RewriteRule ^cont.ctenos/?$ https://www.dulikosrl.com/ [R=301,L,NC]
+RewriteRule ^contactenos/?$ https://www.dulikosrl.com/ [R=301,L,NC]
+RewriteRule ^sitemap/?$ https://www.dulikosrl.com/sitemap.xml [R=301,L,NC]
+RewriteRule ^sobre-nosotros/?$ https://www.dulikosrl.com/ [R=301,L,NC]
+RewriteRule ^productos/?$ https://www.dulikosrl.com/productos.html [R=301,L,NC]
+RewriteRule ^inicio/?$ https://www.dulikosrl.com/ [R=301,L,NC]
