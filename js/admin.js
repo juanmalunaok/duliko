@@ -93,8 +93,9 @@ function compressAllImages() {
       }
       var prod = products[idx];
       if (btn) btn.textContent = 'Comprimiendo ' + (idx+1) + '/' + total + '...';
-      // Fetch image as blob, compress, re-upload
-      fetch(prod.image).then(function(r) { return r.blob(); }).then(function(blob) {
+      // Fetch image via proxy (bypasses CORS), compress, re-upload
+      var proxyUrl = '/api/imgproxy.php?url=' + encodeURIComponent(prod.image);
+      fetch(proxyUrl).then(function(r) { return r.blob(); }).then(function(blob) {
         return new Promise(function(resolve, reject) {
           compressImageFile(blob, resolve, reject);
         });
