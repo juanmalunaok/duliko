@@ -5,7 +5,7 @@ var customTags=["Sin TACC","Kosher","Importados","Orgánicos","Sin Lactosa","Veg
 var customBrands=["ALL RICE","Autenta Foods","Clic-Clac","Dame maní","Edemy","El Celta","Farfalej","Frisbix","Green Crops","Lulemúu","Magla","Mixme","Natural Pop","Osem - Nestle","Rodez","Yin Yang"];
 
 var _CACHE_KEY='duliko_products_v1';
-var _CACHE_TTL=30*60*1000;
+var _CACHE_TTL=2*60*1000; // 2 minutos — Firestore es el fallback, no queremos datos viejos
 
 function _sortProducts(arr){arr.sort(function(a,b){var ao=a.order!=null?a.order:99999,bo=b.order!=null?b.order:99999;if(ao!==bo)return ao-bo;var ta=a.createdAt?a.createdAt.seconds:0,tb=b.createdAt?b.createdAt.seconds:0;return tb-ta});return arr}
 
@@ -35,7 +35,6 @@ function loadProducts(){
     loadStaticCatalog(
       function(prods){
         allProducts=prods;_sortProducts(allProducts);
-        try{localStorage.setItem(_CACHE_KEY,JSON.stringify({products:allProducts,ts:Date.now()}))}catch(e){}
         render();
       },
       function(){_loadFromFirestore();}

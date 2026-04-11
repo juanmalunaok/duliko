@@ -44,8 +44,10 @@ function publishStaticCatalog(onDone, onError) {
     });
   }).then(function(r) { return r.json(); })
   .then(function(res) {
-    if (res.ok) { if (onDone) onDone(res.count); }
-    else { if (onError) onError(res.error || 'Error desconocido'); }
+    if (res.ok) {
+      try { localStorage.removeItem('duliko_products_v1'); } catch(e) {}
+      if (onDone) onDone(res.count);
+    } else { if (onError) onError(res.error || 'Error desconocido'); }
   })
   .catch(function(e) { if (onError) onError(e.message); });
 }
