@@ -6,6 +6,8 @@ var selectedTags=[];
 var editingProductId=null;
 var brandImages={};
 
+function escHTML(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+
 function signInWithGoogle(){
   if(!auth){showErr('Firebase no configurado.');return}
   auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(function(r){
@@ -223,7 +225,7 @@ function loadAdminList(){
     if(s.empty){l.innerHTML='<p style="text-align:center;padding:32px;color:var(--text2)">Sin productos. Agregá uno nuevo.</p>';return}
     var prods=[];s.forEach(function(doc){var p=doc.data();p._id=doc.id;prods.push(p)});
     prods.sort(function(a,b){var ao=a.order!=null?a.order:99999,bo=b.order!=null?b.order:99999;if(ao!==bo)return ao-bo;var ta=a.createdAt?a.createdAt.seconds:0,tb=b.createdAt?b.createdAt.seconds:0;return tb-ta});
-    var h='';prods.forEach(function(p){var stockBadge=p.inStock===false?'<span class="a-stock out">Sin stock</span>':'<span class="a-stock in">En stock</span>';h+='<div class="a-item" draggable="true" data-id="'+p._id+'"><div class="drag-handle" title="Arrastrar para reordenar">⠿</div><img class="a-thumb" src="'+(p.image||HERO_IMG)+'"><div class="a-info"><h4>'+p.name+stockBadge+'</h4><span>'+p.category+'</span></div><button class="btn-ed" onclick="editProduct(\''+p._id+'\')" style="margin-right:6px">Editar</button><button class="a-del" onclick="deleteProduct(\''+p._id+'\')">✕</button></div>'});
+    var h='';prods.forEach(function(p){var stockBadge=p.inStock===false?'<span class="a-stock out">Sin stock</span>':'<span class="a-stock in">En stock</span>';h+='<div class="a-item" draggable="true" data-id="'+p._id+'"><div class="drag-handle" title="Arrastrar para reordenar">⠿</div><img class="a-thumb" src="'+(p.image||HERO_IMG)+'"><div class="a-info"><h4>'+escHTML(p.name)+stockBadge+'</h4><span>'+escHTML(p.category)+'</span></div><button class="btn-ed" onclick="editProduct(\''+p._id+'\')" style="margin-right:6px">Editar</button><button class="a-del" onclick="deleteProduct(\''+p._id+'\')">✕</button></div>'});
     l.innerHTML=h;
     initDragDrop(l);
   });
@@ -232,7 +234,7 @@ function loadAdminList(){
   if(nl){
     db.collection('novedades').orderBy('date','desc').get().then(function(s){
       if(s.empty){nl.innerHTML='<p style="text-align:center;padding:16px;color:var(--text2)">Sin novedades.</p>';return}
-      var h='';s.forEach(function(doc){var n=doc.data();h+='<div class="a-item"><div class="a-info"><h4>'+n.title+'</h4><span>'+(n.description||'').substring(0,60)+'</span></div><button class="a-del" onclick="deleteNovedad(\''+doc.id+'\')">✕</button></div>'});
+      var h='';s.forEach(function(doc){var n=doc.data();h+='<div class="a-item"><div class="a-info"><h4>'+escHTML(n.title)+'</h4><span>'+escHTML((n.description||'').substring(0,60))+'</span></div><button class="a-del" onclick="deleteNovedad(\''+doc.id+'\')">✕</button></div>'});
       nl.innerHTML=h;
     });
   }
@@ -374,7 +376,7 @@ function loadDashboard(){
     for(var i=0;i<Math.min(8,recent.length);i++){
       var p=recent[i];
       var stockBadge=p.inStock===false?'<span class="a-stock out">Sin stock</span>':'<span class="a-stock in">En stock</span>';
-      h+='<tr><td><div class="dash-td-img"><img src="'+(p.image||HERO_IMG)+'" alt=""><span>'+p.name+'</span></div></td><td class="dash-td-cat">'+p.category+'</td><td>'+stockBadge+'</td></tr>';
+      h+='<tr><td><div class="dash-td-img"><img src="'+(p.image||HERO_IMG)+'" alt=""><span>'+escHTML(p.name)+'</span></div></td><td class="dash-td-cat">'+escHTML(p.category)+'</td><td>'+stockBadge+'</td></tr>';
     }
     h+='</tbody></table>';
     rl.innerHTML=h;
